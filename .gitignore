@@ -1,0 +1,49 @@
+# =====================  Dependencies  =====================
+node_modules/
+
+# =====================  Build output  ======================
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# =====================  Environment  =======================
+# Secrets / local config - never commit (Backend/.env holds DB + API keys)
+.env
+.env.*
+!.env.example
+
+# =====================  Logs & caches  =====================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.vite/
+.cache/
+coverage/
+
+# =====================  Freebuff preview  ==================
+# Session artifacts - keep run.md/project-id, drop logs
+.freebuff/*.log
+.freebuff/*.log.*
+
+# =====================  AI agent / skill caches  ===========
+# Consolidated skill packs (remove this line to track Frontend/.ai/)
+Frontend/.ai/
+
+# =====================  Editor & OS junk  ==================
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+Desktop.ini
+.freebuff

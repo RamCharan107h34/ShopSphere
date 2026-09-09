@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Env files (secrets: DB connection, API keys - never commit)
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# AI agent / skill caches
+.ai/
+
+# Editor & OS junk
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.sw?
