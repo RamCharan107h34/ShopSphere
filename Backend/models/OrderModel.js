@@ -64,6 +64,7 @@ export const vendorSubOrderSchema = new mongoose.Schema(
                 "confirmed",
                 "packed",
                 "shipped",
+                "out_for_delivery",
                 "delivered",
                 "cancelled",
                 "return_requested",

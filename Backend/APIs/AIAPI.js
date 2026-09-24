@@ -3,6 +3,8 @@ import exp from "express";
 import { ProductModel } from "../models/ProductModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { validate } from "../middlewares/validate.js";
+import { aiDescriptionSchema, aiSearchSchema } from "../validators/schemas.js";
 import {
     generateProductDescription,
     rankProductsByRelevance
@@ -12,14 +14,13 @@ export const aiApp = exp.Router();
 
 // 1. AI Product Description Generator (Seller only)
 // Seller sends product attributes -> AI returns a ready description + key selling points
-aiApp.post("/generate-description", verifyToken, verifyRole("seller"), async (req, res) => {
+aiApp.post(
+    "/generate-description",
+    verifyToken,
+    verifyRole("seller"),
+    validate({ body: aiDescriptionSchema }),
+    async (req, res) => {
     const { title, category, brand, price, targetAudience, material, keywords } = req.body;
-
-    if (!title || !title.trim()) {
-        return res.status(400).json({
-            message: "Product title is required to generate a description"
-        });
-    }
 
     if (!process.env.COHERE_API_KEY) {
         return res.status(503).json({
@@ -53,14 +54,8 @@ aiApp.post("/generate-description", verifyToken, verifyRole("seller"), async (re
 
 // 2. AI Semantic Product Search (Public - works for customers & guests)
 // Customer types a natural-language query -> AI ranks the most relevant products
-aiApp.post("/search", async (req, res) => {
+aiApp.post("/search", validate({ body: aiSearchSchema }), async (req, res) => {
     const { query, limit = 10 } = req.body;
-
-    if (!query || !query.trim()) {
-        return res.status(400).json({
-            message: "Search query is required"
-        });
-    }
 
     const topN = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 25);
 
@@ -89,6 +84,10 @@ aiApp.post("/search", async (req, res) => {
     }
 
     // Step 2: semantic ranking via Cohere Rerank (1 AI call)
+    // Scores survive outside the try block so the keyword fallback below can
+    // still use them for ordering when the rerank ran but found nothing above
+    // the relevance floor (or failed entirely).
+    let rerankResults = [];
     if (process.env.COHERE_API_KEY) {
         try {
             const documents = candidates.map((product) =>
@@ -96,6 +95,7 @@ aiApp.post("/search", async (req, res) => {
             );
 
             const results = await rankProductsByRelevance(query.trim(), documents, topN);
+            rerankResults = results;
 
             // Keep only meaningfully relevant matches, drop noise near 0.0.
             // Note: Cohere rerank-v3.5 returns absolute scores that sit low
@@ -155,7 +155,7 @@ aiApp.post("/search", async (req, res) => {
     // no results above the floor, re-order the keyword pool by the rerank's
     // scores (they are still a meaningful relevance signal, just below floor).
     const scoreById = new Map(
-        (results || []).map((result) => [candidates[result.index]?._id?.toString(), result.relevance_score])
+        rerankResults.map((result) => [candidates[result.index]?._id?.toString(), result.relevance_score])
     );
     const products = [...candidates]
         .sort((a, b) => (scoreById.get(b._id.toString()) ?? -1) - (scoreById.get(a._id.toString()) ?? -1))

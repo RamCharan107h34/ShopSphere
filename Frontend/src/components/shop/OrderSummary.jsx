@@ -13,26 +13,26 @@ export function OrderSummary({ itemLabel, subtotal, discount = 0, children, clas
 
   return (
     <Card className={cn('sticky top-24', className)}>
-      <div className="border-b border-border px-5 py-4">
-        <h2 className="flex items-center gap-2 font-semibold">
-          <ShoppingBag className="size-4 text-primary" />
+      <div className="border-b border-slate-200 px-5 py-4">
+        <h2 className="flex items-center gap-2 font-semibold text-slate-900">
+          <ShoppingBag className="size-4 text-violet-600" />
           Order summary
         </h2>
       </div>
 
       <div className="space-y-2.5 px-5 py-4 text-sm">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Subtotal ({itemLabel})</span>
+          <span className="text-slate-500">Subtotal ({itemLabel})</span>
           <span className="font-medium">{formatPrice(subtotal)}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Delivery</span>
-          <span className="font-medium text-success-700">Free</span>
+          <span className="text-slate-500">Delivery</span>
+          <span className="font-medium text-emerald-700">Free</span>
         </div>
 
         {discount > 0 && (
-          <div className="flex items-center justify-between text-success-700">
+          <div className="flex items-center justify-between text-emerald-700">
             <span>Coupon discount</span>
             <span className="font-medium">−{formatPrice(discount)}</span>
           </div>
@@ -40,18 +40,18 @@ export function OrderSummary({ itemLabel, subtotal, discount = 0, children, clas
 
         {extraRows.map((row) => (
           <div key={row.label} className="flex items-center justify-between">
-            <span className="text-muted-foreground">{row.label}</span>
+            <span className="text-slate-500">{row.label}</span>
             <span className="font-medium">{row.value}</span>
           </div>
         ))}
 
-        <div className="flex items-center justify-between border-t border-dashed border-border pt-3 text-base">
-          <span className="font-semibold">Total</span>
-          <span className="text-lg font-bold tracking-tight">{formatPrice(total)}</span>
+        <div className="flex items-center justify-between border-t border-dashed border-slate-200 pt-3 text-base">
+          <span className="font-semibold text-slate-900">Total</span>
+          <span className="text-lg font-bold tracking-tight text-slate-900">{formatPrice(total)}</span>
         </div>
       </div>
 
-      {children && <div className="space-y-2 border-t border-border px-5 py-4">{children}</div>}
+      {children && <div className="space-y-2 border-t border-slate-200 px-5 py-4">{children}</div>}
     </Card>
   )
 }

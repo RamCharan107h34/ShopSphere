@@ -19,7 +19,7 @@ function StockCell({ value, onChange, invalid }) {
       value={value}
       onChange={(event) => onChange(event.target.value)}
       aria-invalid={invalid}
-      className={cn('h-9 w-24 text-center', invalid && 'border-destructive')}
+      className={cn('h-9 w-24 text-center', invalid && 'border-red-500')}
     />
   )
 }
@@ -53,18 +53,18 @@ function ProductRow({ product, onSaved }) {
   const low = product.stock > 0 && product.stock <= product.lowStockThreshold
 
   return (
-    <div className="border-b border-border last:border-0">
+    <div className="border-b border-slate-200 last:border-0">
       <div className="flex flex-wrap items-center gap-4 px-5 py-4">
         <Thumb src={product.images?.[0]} alt={product.title} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{product.title}</p>
-          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
             {product.stock === 0 ? (
               <Badge variant="danger">Out of stock</Badge>
             ) : low ? (
               <>
-                <TriangleAlert className="size-3 text-warning-700" />
-                <span className="text-warning-700">Low stock</span>
+                <TriangleAlert className="size-3 text-amber-700" />
+                <span className="text-amber-700">Low stock</span>
               </>
             ) : (
               <Badge variant="success">In stock</Badge>
@@ -73,11 +73,11 @@ function ProductRow({ product, onSaved }) {
         </div>
         <div className="flex items-end gap-2">
           <div>
-            <label className="mb-1 block text-[11px] font-medium text-muted-foreground">Stock</label>
+            <label className="mb-1 block text-[11px] font-medium text-slate-500">Stock</label>
             <StockCell value={stock} onChange={setStock} invalid={invalid} />
           </div>
           <div>
-            <label className="mb-1 block text-[11px] font-medium text-muted-foreground">Low at</label>
+            <label className="mb-1 block text-[11px] font-medium text-slate-500">Low at</label>
             <StockCell value={threshold} onChange={setThreshold} invalid={invalidThreshold} />
           </div>
           <Button variant="outline" size="sm" className="mb-0.5" disabled={!dirty || invalid || invalidThreshold} loading={saving} onClick={save}>
@@ -88,8 +88,8 @@ function ProductRow({ product, onSaved }) {
 
       {/* Variant stock rows */}
       {product.variants?.length > 0 && (
-        <div className="space-y-1 bg-muted/30 px-5 py-3">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Variant stock</p>
+        <div className="space-y-1 bg-slate-50 px-5 py-3">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Variant stock</p>
           {product.variants.map((variant) => (
             <VariantRow key={variant._id} productId={product._id} variant={variant} />
           ))}
@@ -124,7 +124,7 @@ function VariantRow({ productId, variant }) {
   return (
     <div className="flex flex-wrap items-center gap-3 py-1.5">
       <span className="min-w-0 flex-1 truncate text-sm">{variant.name}</span>
-      {variant.sku && <span className="text-xs text-muted-foreground">{variant.sku}</span>}
+      {variant.sku && <span className="text-xs text-slate-500">{variant.sku}</span>}
       <StockCell value={stock} onChange={setStock} invalid={invalid} />
       <Button variant="outline" size="sm" disabled={!dirty || invalid} loading={saving} onClick={save}>
         <Check /> Save
@@ -155,18 +155,18 @@ export default function SellerInventory() {
       )}
 
       {loading ? (
-        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : products?.length ? (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           {products.map((product) => (
             <ProductRow key={product._id} product={product} onSaved={refetch} />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Boxes className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600"><Boxes className="size-6" /></span>
           <h2 className="text-base font-semibold">Nothing to track yet</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Products you list will appear here with live stock controls.</p>
+          <p className="max-w-sm text-sm text-slate-500">Products you list will appear here with live stock controls.</p>
         </div>
       )}
     </div>

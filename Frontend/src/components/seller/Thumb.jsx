@@ -10,7 +10,7 @@ export function Thumb({ src, alt, className }) {
   return (
     <span
       className={cn(
-        'flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted text-muted-foreground',
+        'flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 text-slate-400',
         className,
       )}
     >

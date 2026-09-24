@@ -57,25 +57,25 @@ export function CouponBox({ subtotal, applied, onApply, autoCode }) {
         layout
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between gap-3 rounded-xl border border-success/30 bg-success/10 px-3.5 py-2.5"
+        className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5"
       >
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-success/20">
-            <Check className="size-4 text-success-700" />
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+            <Check className="size-4 text-emerald-700" />
           </span>
           <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-sm font-semibold">
-              <TicketPercent className="size-3.5 text-success-700" />
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+              <TicketPercent className="size-3.5 text-emerald-700" />
               {applied.code}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-slate-500">
               You're saving {formatPrice(applied.discount)}
             </p>
           </div>
         </div>
         <button
           onClick={() => onApply(null)}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-success/15 hover:text-foreground"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition-colors hover:bg-emerald-100 hover:text-slate-900"
           aria-label={`Remove coupon ${applied.code}`}
         >
           <X className="size-3.5" /> Remove
@@ -89,7 +89,7 @@ export function CouponBox({ subtotal, applied, onApply, autoCode }) {
   return (
     <div role="group" aria-label="Apply coupon" className="flex items-center gap-2">
       <div className="relative min-w-0 flex-1">
-        <BadgePercent className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <BadgePercent className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
         <Input
           value={code}
           onChange={(event) => setCode(event.target.value)}

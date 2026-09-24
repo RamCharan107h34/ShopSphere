@@ -198,7 +198,7 @@ export default function OrderDetails() {
     return (
       <div className="flex flex-col items-center gap-3 py-20 text-center">
         <h2 className="text-xl font-bold">Order not found</h2>
-        <p className="text-sm text-muted-foreground">This order doesn't exist or isn't linked to your account.</p>
+        <p className="text-sm text-slate-500">This order doesn't exist or isn't linked to your account.</p>
         <Link to="/account/orders">
           <Button variant="outline">Back to my orders</Button>
         </Link>
@@ -215,17 +215,17 @@ export default function OrderDetails() {
       {/* Back */}
       <Link
         to="/account/orders"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-violet-600"
       >
         <ArrowLeft className="size-4" /> Back to my orders
       </Link>
 
       {/* Header */}
       <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight">{order.orderNumber}</h2>
-            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
               <CalendarDays className="size-3.5" /> Placed on {formatDate(order.createdAt)}
             </p>
           </div>
@@ -234,24 +234,24 @@ export default function OrderDetails() {
 
         <div className="grid gap-5 p-5 sm:grid-cols-3">
           <div>
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <MapPin className="size-3.5" /> Deliver to
             </p>
             <p className="mt-1.5 text-sm leading-relaxed">
               {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
               {order.shippingAddress.pincode}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">Phone: {order.shippingAddress.phone}</p>
+            <p className="mt-1 text-sm text-slate-500">Phone: {order.shippingAddress.phone}</p>
           </div>
           <div>
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <CreditCard className="size-3.5" /> Payment
             </p>
             <p className="mt-1.5 text-sm">{PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod}</p>
-            <p className="mt-0.5 text-sm capitalize text-muted-foreground">{order.paymentStatus}</p>
+            <p className="mt-0.5 text-sm capitalize text-slate-500">{order.paymentStatus}</p>
           </div>
           <div>
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <Store className="size-3.5" /> Summary
             </p>
             <p className="mt-1.5 text-sm">
@@ -262,7 +262,7 @@ export default function OrderDetails() {
               <span className="font-bold">
                 {formatPrice(order.totalAmount)}
                 {order.discountAmount > 0 && (
-                  <span className="ml-1 font-normal text-success-700">(−{formatPrice(order.discountAmount)} coupon)</span>
+                  <span className="ml-1 font-normal text-emerald-700">(−{formatPrice(order.discountAmount)} coupon)</span>
                 )}
               </span>
             </p>
@@ -283,14 +283,14 @@ export default function OrderDetails() {
           >
             <Card className="overflow-hidden">
               {/* Store header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-5 py-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-3.5">
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <Store className="size-4 text-primary" />
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-50">
+                    <Store className="size-4 text-violet-600" />
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{vendorOrder.storeId?.storeName || 'ShopSphere seller'}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-slate-500">
                       {vendorOrder.items.reduce((n, item) => n + item.quantity, 0)} items · {formatPrice(vendorOrder.subtotal)}
                     </p>
                   </div>
@@ -314,29 +314,29 @@ export default function OrderDetails() {
                               onError={(event) => {
                                 event.currentTarget.style.display = 'none'
                               }}
-                              className="size-14 rounded-lg object-cover ring-1 ring-border"
+                              className="size-14 rounded-lg object-cover ring-1 ring-slate-200"
                             />
                           ) : (
-                            <div className="flex size-14 items-center justify-center rounded-lg bg-muted">
-                              <Store className="size-5 text-muted-foreground/50" />
+                            <div className="flex size-14 items-center justify-center rounded-lg bg-slate-100">
+                              <Store className="size-5 text-slate-400" />
                             </div>
                           )}
-                          <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                          <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white">
                             {item.quantity}
                           </span>
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <Link to={`/product/${item.productId}`} className="line-clamp-1 text-sm font-medium hover:text-primary">
+                          <Link to={`/product/${item.productId}`} className="line-clamp-1 text-sm font-medium hover:text-violet-600">
                             {item.title}
                           </Link>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
+                          <p className="mt-0.5 text-xs text-slate-500">
                             {item.variantName ? `${item.variantName} · ` : ''}
                             {formatPrice(item.price)} each
                           </p>
                           {item.quantity > 1 && (
-                            <p className="mt-0.5 text-xs text-muted-foreground">
-                              Line total: <span className="font-semibold text-foreground">{formatPrice(item.price * item.quantity)}</span>
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              Line total: <span className="font-semibold text-slate-900">{formatPrice(item.price * item.quantity)}</span>
                             </p>
                           )}
                         </div>
@@ -368,32 +368,32 @@ export default function OrderDetails() {
                 </ul>
 
                 {/* Status / timeline column */}
-                <div className="rounded-xl border border-border bg-card/60 p-4">
+                <div className="rounded-xl border border-slate-200 bg-white/60 p-4">
                   {steps.length > 0 ? (
                     <>
-                      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
                         <Truck className="size-3.5" /> Shipment progress
                       </p>
                       <FlowSteps steps={steps} />
                     </>
                   ) : returnInfo ? (
                     <>
-                      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
                         <RotateCcw className="size-3.5" /> Return progress
                       </p>
                       <FlowSteps steps={returnFlowSteps(returnInfo.status)} />
-                      <p className="mt-3 text-xs text-muted-foreground">
-                        Refund: <span className="font-semibold text-foreground">{formatPrice(returnInfo.refundAmount)}</span>
+                      <p className="mt-3 text-xs text-slate-500">
+                        Refund: <span className="font-semibold text-slate-900">{formatPrice(returnInfo.refundAmount)}</span>
                       </p>
                     </>
                   ) : (
-                    <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <XCircle className="size-3.5 text-danger-600" /> This shipment was cancelled.
+                    <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <XCircle className="size-3.5 text-red-600" /> This shipment was cancelled.
                     </p>
                   )}
                   {vendorOrder.trackingNumber && (
-                    <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
-                      Tracking: <span className="font-mono font-medium text-foreground">{vendorOrder.trackingNumber}</span>
+                    <p className="mt-3 border-t border-slate-200 pt-3 text-xs text-slate-500">
+                      Tracking: <span className="font-mono font-medium text-slate-900">{vendorOrder.trackingNumber}</span>
                     </p>
                   )}
                 </div>
@@ -419,8 +419,8 @@ export default function OrderDetails() {
         title="Cancel this order?"
         description="The full order will be cancelled and all items restored to stock."
       >
-        <p className="text-sm text-muted-foreground">
-          You're about to cancel <span className="font-semibold text-foreground">{order.orderNumber}</span> (
+        <p className="text-sm text-slate-500">
+          You're about to cancel <span className="font-semibold text-slate-900">{order.orderNumber}</span> (
           {formatPrice(order.totalAmount)}).
         </p>
         <div className="mt-6 flex justify-end gap-2">
@@ -442,10 +442,10 @@ export default function OrderDetails() {
       >
         {reviewItem && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
               <div className="min-w-0 flex-1">
                 <p className="line-clamp-1 text-sm font-semibold">{reviewItem.item.title}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-slate-500">
                   {reviewItem.item.variantName ? `${reviewItem.item.variantName} · ` : ''}
                   {formatPrice(reviewItem.item.price)} · from{' '}
                   {reviewItem.vendorOrder.storeId?.storeName || 'seller'}
@@ -474,7 +474,7 @@ export default function OrderDetails() {
                     />
                   </button>
                 ))}
-                <span className="ml-2 text-sm font-semibold text-foreground">{reviewRating}.0</span>
+                <span className="ml-2 text-sm font-semibold text-slate-900">{reviewRating}.0</span>
               </div>
             </div>
 
@@ -511,10 +511,10 @@ export default function OrderDetails() {
       >
         {returnItem && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
               <div className="min-w-0 flex-1">
                 <p className="line-clamp-1 text-sm font-semibold">{returnItem.item.title}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-slate-500">
                   {returnItem.item.variantName ? `${returnItem.item.variantName} · ` : ''}
                   {formatPrice(returnItem.item.price)} each · from{' '}
                   {returnItem.vendorOrder.storeId?.storeName || 'seller'}
@@ -524,12 +524,12 @@ export default function OrderDetails() {
 
             <div>
               <Label htmlFor="return-qty">Quantity to return</Label>
-              <div className="mt-1.5 inline-flex items-center rounded-lg border border-border bg-card">
+              <div className="mt-1.5 inline-flex items-center rounded-lg border border-slate-200 bg-white">
                 <button
                   onClick={() => setReturnQty((q) => Math.max(1, q - 1))}
                   disabled={returnQty <= 1}
                   aria-label="Decrease return quantity"
-                  className="flex size-9 items-center justify-center rounded-l-lg text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+                  className="flex size-9 items-center justify-center rounded-l-lg text-slate-500 transition-colors hover:text-slate-900 disabled:opacity-40"
                 >
                   <Minus className="size-3.5" />
                 </button>
@@ -538,12 +538,12 @@ export default function OrderDetails() {
                   onClick={() => setReturnQty((q) => Math.min(returnItem.item.quantity, q + 1))}
                   disabled={returnQty >= returnItem.item.quantity}
                   aria-label="Increase return quantity"
-                  className="flex size-9 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+                  className="flex size-9 items-center justify-center rounded-r-lg text-slate-500 transition-colors hover:text-slate-900 disabled:opacity-40"
                 >
                   <Plus className="size-3.5" />
                 </button>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-slate-500">
                 Refund estimate: {formatPrice(returnItem.item.price * returnQty)}
               </p>
             </div>

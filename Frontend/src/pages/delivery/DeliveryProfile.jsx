@@ -92,17 +92,17 @@ export default function DeliveryProfile() {
     .join('')
     .toUpperCase()
 
-  const fieldClass = (name) => (errors[name] ? 'border-danger-400 focus-visible:ring-danger-300' : '')
+  const fieldClass = (name) => (errors[name] ? 'border-red-400 focus-visible:ring-red-300' : '')
 
   return (
     <div className="space-y-5">
       <PageIntro title="Profile" subtitle="Keep your contact details current — sellers and customers may call you." />
 
       {/* Summary card */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-        <div className="h-20 bg-gradient-to-r from-brand-600 via-primary to-fuchsia-500" />
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="h-20 bg-gradient-to-r from-emerald-600 via-emerald-600 to-fuchsia-500" />
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-end">
-          <span className="-mt-14 flex size-20 items-center justify-center rounded-2xl border-4 border-card bg-white text-xl font-black text-primary shadow-card">
+          <span className="-mt-14 flex size-20 items-center justify-center rounded-2xl border-4 border-white bg-white text-xl font-black text-emerald-600 shadow-sm">
             {initials}
           </span>
           <div className="min-w-0 flex-1">
@@ -112,7 +112,7 @@ export default function DeliveryProfile() {
                 <Truck className="size-3" /> Delivery partner
               </Badge>
             </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
               <span className="inline-flex items-center gap-1.5">
                 <Mail className="size-3.5" /> {display.email}
               </span>
@@ -127,15 +127,15 @@ export default function DeliveryProfile() {
             </div>
           </div>
           <Badge variant="outline" className="self-start">
-            <BadgeCheck className="size-3 text-primary" /> Active partner
+            <BadgeCheck className="size-3 text-emerald-600" /> Active partner
           </Badge>
         </div>
       </div>
 
       {/* Edit form */}
-      <div className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <h3 className="flex items-center gap-2 font-semibold">
-          <UserRound className="size-4 text-primary" /> Personal details
+          <UserRound className="size-4 text-emerald-600" /> Personal details
         </h3>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -148,7 +148,7 @@ export default function DeliveryProfile() {
               aria-invalid={Boolean(errors.name)}
               className={`mt-1.5 ${fieldClass('name')}`}
             />
-            {errors.name && <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.name}</p>}
+            {errors.name && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.name}</p>}
           </div>
           <div>
             <Label htmlFor="delivery-phone">Phone</Label>
@@ -161,11 +161,11 @@ export default function DeliveryProfile() {
               aria-invalid={Boolean(errors.phone)}
               className={`mt-1.5 ${fieldClass('phone')}`}
             />
-            {errors.phone && <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.phone}</p>}
+            {errors.phone && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.phone}</p>}
           </div>
           <div className="sm:col-span-2">
             <Label htmlFor="delivery-email" className="flex items-center gap-1.5">
-              Email <span className="text-xs font-normal text-muted-foreground">(can't be changed)</span>
+              Email <span className="text-xs font-normal text-slate-500">(can't be changed)</span>
             </Label>
             <Input id="delivery-email" value={display.email || ''} disabled className="mt-1.5" />
           </div>

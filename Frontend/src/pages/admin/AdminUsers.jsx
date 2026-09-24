@@ -80,7 +80,7 @@ export default function AdminUsers() {
       {/* Filters */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative min-w-0 flex-1 sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
           <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name, email, phone…" className="pl-9" />
         </div>
         <Select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className="w-40">
@@ -92,12 +92,12 @@ export default function AdminUsers() {
       </div>
 
       {loading ? (
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
       ) : filtered.length ? (
-        <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <th className="px-5 py-3 font-semibold">User</th>
                 <th className="px-5 py-3 font-semibold">Role</th>
                 <th className="hidden px-5 py-3 font-semibold md:table-cell">Phone</th>
@@ -106,23 +106,23 @@ export default function AdminUsers() {
                 <th className="px-5 py-3 text-right font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-200">
               {filtered.map((user) => {
                 const role = ROLE_META[user.role] || { label: user.role, variant: 'neutral' }
                 return (
-                  <tr key={user._id} className="transition-colors hover:bg-muted/30">
+                  <tr key={user._id} className="transition-colors hover:bg-slate-50">
                     <td className="px-5 py-3">
                       <p className="font-semibold">{user.name}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <p className="text-xs text-slate-500">{user.email}</p>
                     </td>
                     <td className="px-5 py-3"><Badge variant={role.variant}>{role.label}</Badge></td>
-                    <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{user.phone || '—'}</td>
-                    <td className="hidden px-5 py-3 text-muted-foreground lg:table-cell">
+                    <td className="hidden px-5 py-3 text-slate-500 md:table-cell">{user.phone || '—'}</td>
+                    <td className="hidden px-5 py-3 text-slate-500 lg:table-cell">
                       {new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium', user.isActive ? 'text-success' : 'text-destructive')}>
-                        <span className={cn('size-2 rounded-full', user.isActive ? 'bg-success' : 'bg-destructive')} />
+                      <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium', user.isActive ? 'text-emerald-600' : 'text-red-600')}>
+                        <span className={cn('size-2 rounded-full', user.isActive ? 'bg-emerald-500' : 'bg-red-500')} />
                         {user.isActive ? 'Active' : 'Suspended'}
                       </span>
                     </td>
@@ -141,7 +141,7 @@ export default function AdminUsers() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-muted-foreground hover:text-destructive"
+                          className="text-slate-500 hover:text-red-600"
                           disabled={user.role === 'admin' || user._id === JSON.parse(localStorage.getItem('shopsphere_user') || '{}')._id}
                           onClick={() => setDeleteTarget(user)}
                         >
@@ -156,10 +156,10 @@ export default function AdminUsers() {
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Users className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Users className="size-6" /></span>
           <h2 className="text-base font-semibold">No users match</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Try a different search term or role filter.</p>
+          <p className="max-w-sm text-sm text-slate-500">Try a different search term or role filter.</p>
         </div>
       )}
 

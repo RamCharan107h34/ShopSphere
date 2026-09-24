@@ -126,15 +126,15 @@ export default function Profile() {
     .join('')
     .toUpperCase()
 
-  const fieldClass = (name) => cn(errors[name] && 'border-danger-400 focus-visible:ring-danger-300')
+  const fieldClass = (name) => cn(errors[name] && 'border-red-400 focus-visible:ring-red-300')
 
   return (
     <div className="space-y-5">
       {/* Summary card */}
       <Card className="overflow-hidden">
-        <div className="h-20 bg-gradient-to-r from-brand-600 via-primary to-fuchsia-500" />
+        <div className="h-20 bg-gradient-to-r from-violet-600 via-violet-600 to-fuchsia-500" />
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-end">
-          <span className="-mt-14 flex size-20 items-center justify-center rounded-2xl border-4 border-card bg-white text-xl font-black text-primary shadow-card">
+          <span className="-mt-14 flex size-20 items-center justify-center rounded-2xl border-4 border-white bg-white text-xl font-black text-violet-600 shadow-sm">
             {initials}
           </span>
           <div className="min-w-0 flex-1">
@@ -142,7 +142,7 @@ export default function Profile() {
               <h2 className="text-xl font-bold tracking-tight">{display.name}</h2>
               <Badge variant="success">{ROLE_LABELS[display.role] || display.role}</Badge>
             </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
               <span className="inline-flex items-center gap-1.5">
                 <Mail className="size-3.5" /> {display.email}
               </span>
@@ -157,7 +157,7 @@ export default function Profile() {
             </div>
           </div>
           <Badge variant="outline" className="self-start">
-            <BadgeCheck className="size-3 text-primary" /> Verified buyer
+            <BadgeCheck className="size-3 text-violet-600" /> Verified buyer
           </Badge>
         </div>
       </Card>
@@ -165,14 +165,14 @@ export default function Profile() {
       {/* Edit form */}
       <Card className="p-5 sm:p-6">
         <h3 className="flex items-center gap-2 font-semibold">
-          <UserRound className="size-4 text-primary" /> Personal details
+          <UserRound className="size-4 text-violet-600" /> Personal details
         </h3>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="name">Full name *</Label>
             <Input id="name" value={form.name} onChange={(event) => setField('name', event.target.value)} aria-invalid={Boolean(errors.name)} className={cn('mt-1.5', fieldClass('name'))} />
-            {errors.name && <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.name}</p>}
+            {errors.name && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.name}</p>}
           </div>
           <div>
             <Label htmlFor="profile-phone">Phone</Label>
@@ -185,19 +185,19 @@ export default function Profile() {
               aria-invalid={Boolean(errors.phone)}
               className={cn('mt-1.5', fieldClass('phone'))}
             />
-            {errors.phone && <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.phone}</p>}
+            {errors.phone && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.phone}</p>}
           </div>
 
           <div className="sm:col-span-2">
             <Label htmlFor="email" className="flex items-center gap-1.5">
-              Email <span className="text-xs font-normal text-muted-foreground">(can't be changed)</span>
+              Email <span className="text-xs font-normal text-slate-500">(can't be changed)</span>
             </Label>
             <Input id="email" value={display.email || ''} disabled className="mt-1.5" />
           </div>
         </div>
 
-        <div className="mt-6 flex items-center gap-2 border-t border-border pt-5">
-          <MapPin className="size-4 text-primary" />
+        <div className="mt-6 flex items-center gap-2 border-t border-slate-200 pt-5">
+          <MapPin className="size-4 text-violet-600" />
           <h3 className="font-semibold">Default delivery address</h3>
         </div>
 
@@ -230,7 +230,7 @@ export default function Profile() {
               aria-invalid={Boolean(errors.pincode)}
               className={cn('mt-1.5', fieldClass('pincode'))}
             />
-            {errors.pincode && <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.pincode}</p>}
+            {errors.pincode && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.pincode}</p>}
           </div>
         </div>
 

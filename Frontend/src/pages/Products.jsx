@@ -10,13 +10,13 @@ import { Input } from '../components/ui/Input.jsx'
 import { Select } from '../components/ui/Select.jsx'
 import { Skeleton } from '../components/ui/Skeleton.jsx'
 import { ProductGrid } from '../components/customer/ProductGrid.jsx'
+import { ProductQuickView } from '../components/customer/ProductQuickView.jsx'
 import { FilterPanel } from '../components/catalog/FilterPanel.jsx'
 import { Pagination } from '../components/catalog/Pagination.jsx'
 import { AIBadge } from '../components/catalog/AIBadge.jsx'
 import { ErrorState } from '../components/feedback/ErrorState.jsx'
 import { Drawer } from '../components/feedback/Drawer.jsx'
 import {
-  addToCart,
   addToWishlist,
   aiSearchProducts,
   fetchCategories,
@@ -49,10 +49,11 @@ const toNumber = (value) => {
 
 export default function Products() {
   const { user } = useAuth()
-  const { refreshCount } = useCart()
+  const { addItem, openDrawer } = useCart()
   const { toast } = useToast()
   const { slug } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [quickViewProduct, setQuickViewProduct] = useState(null)
   const gridRef = useRef(null)
 
   // ---- Read state from the URL ---------------------------------------
@@ -264,15 +265,22 @@ export default function Products() {
     toast({ title: 'Sign in required', description: 'Create an account or sign in to continue.', variant: 'info' })
   }
 
-  const handleAddToCart = async (product) => {
+  const handleAddToCart = async (product, quantity = 1) => {
     if (!user) return requireSignIn()
     try {
-      await addToCart(product._id)
-      refreshCount()
+      // Optimistic add: the badge bumps and the drawer opens on the same tick
+      await addItem({ productId: product._id, quantity, product })
       toast({ title: 'Added to cart', description: product.title, variant: 'success' })
+      openDrawer()
     } catch (error) {
       toast({ title: 'Could not add item', description: getErrorMessage(error), variant: 'error' })
     }
+  }
+
+  // Quick view modal — the same product card action as on the homepage
+  const handleQuickViewAdd = (product, quantity) => {
+    setQuickViewProduct(null)
+    handleAddToCart(product, quantity)
   }
 
   const handleToggleWishlist = async (product) => {
@@ -331,10 +339,10 @@ export default function Products() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6">
         <h1 className="text-2xl font-bold">Category not found</h1>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-slate-500">
           “{slug}” doesn't exist on ShopSphere yet.
         </p>
-        <Link to="/products" className="mt-6 inline-block font-medium text-primary hover:underline">
+        <Link to="/products" className="mt-6 inline-block font-medium text-violet-600 hover:underline">
           Browse all products →
         </Link>
       </div>
@@ -344,23 +352,23 @@ export default function Products() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-slate-500">
+        <Link to="/" className="transition-colors hover:text-slate-900">Home</Link>
         <ChevronRight className="size-3.5" />
         {activeCategory ? (
           <>
-            <Link to="/products" className="transition-colors hover:text-foreground">Products</Link>
+            <Link to="/products" className="transition-colors hover:text-slate-900">Products</Link>
             <ChevronRight className="size-3.5" />
-            <span className="font-medium text-foreground">{activeCategory.name}</span>
+            <span className="font-medium text-slate-900">{activeCategory.name}</span>
           </>
         ) : (
-          <span className="font-medium text-foreground">Products</span>
+          <span className="font-medium text-slate-900">Products</span>
         )}
       </nav>
 
       {/* Store banner (?store= scope) */}
       {storeParam && (
-        <div className="mt-5 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand-50 via-card to-fuchsia-50">
+        <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50">
           {storeLoading ? (
             <div className="flex items-center gap-4 p-5">
               <Skeleton className="size-14 rounded-xl" />
@@ -379,33 +387,33 @@ export default function Products() {
                   onError={(event) => {
                     event.currentTarget.style.display = 'none'
                   }}
-                  className="size-14 shrink-0 rounded-xl object-cover ring-1 ring-border"
+                  className="size-14 shrink-0 rounded-xl object-cover ring-1 ring-slate-200"
                 />
               ) : (
-                <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl font-black text-primary">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl font-black text-violet-600">
                   {(store.storeName || 'S').charAt(0).toUpperCase()}
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary">Official store</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-violet-600">Official store</p>
                 <h1 className="truncate text-xl font-bold tracking-tight sm:text-2xl">{store.storeName}</h1>
                 {store.description && (
-                  <p className="mt-0.5 line-clamp-2 max-w-2xl text-sm text-muted-foreground">{store.description}</p>
+                  <p className="mt-0.5 line-clamp-2 max-w-2xl text-sm text-slate-500">{store.description}</p>
                 )}
               </div>
               <button
                 onClick={() => updateParams({ store: '' })}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium transition-colors hover:bg-violet-50"
               >
                 <X className="size-3.5" /> Browse all stores
               </button>
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3 p-5">
-              <p className="text-sm text-muted-foreground">This store isn't available right now.</p>
+              <p className="text-sm text-slate-500">This store isn't available right now.</p>
               <button
                 onClick={() => updateParams({ store: '' })}
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-sm font-medium text-violet-600 hover:underline"
               >
                 Browse all products →
               </button>
@@ -418,11 +426,11 @@ export default function Products() {
       <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-          {description && !store && <p className="mt-1 max-w-2xl text-muted-foreground">{description}</p>}
+          {description && !store && <p className="mt-1 max-w-2xl text-slate-500">{description}</p>}
           {query && (
             <button
               onClick={() => updateParams({ search: '' })}
-              className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:underline"
             >
               <X className="size-3.5" /> Clear search
             </button>
@@ -448,7 +456,7 @@ export default function Products() {
                 updateParams({ search: searchDraft.trim() })
               }}
             >
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
               <Input
                 value={searchDraft}
                 onChange={(event) => setSearchDraft(event.target.value)}
@@ -464,7 +472,7 @@ export default function Products() {
                     updateParams({ search: '' })
                   }}
                   aria-label="Clear search"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:text-slate-900"
                 >
                   <X className="size-4" />
                 </button>
@@ -481,7 +489,7 @@ export default function Products() {
               <SlidersHorizontal className="size-4" />
               Filters
               {activeFilterCount > 0 && (
-                <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                <span className="flex size-5 items-center justify-center rounded-full bg-violet-600 text-[11px] font-bold text-white">
                   {activeFilterCount}
                 </span>
               )}
@@ -489,7 +497,7 @@ export default function Products() {
 
             {/* Sort */}
             <div className="flex items-center gap-2">
-              <label htmlFor="sort" className="hidden text-sm text-muted-foreground sm:block">
+              <label htmlFor="sort" className="hidden text-sm text-slate-500 sm:block">
                 Sort by
               </label>
               <Select
@@ -527,11 +535,11 @@ export default function Products() {
           </Drawer>
 
           {/* Result count */}
-          <p className="mb-5 text-sm text-muted-foreground">
+          <p className="mb-5 text-sm text-slate-500">
             {productsState.loading || categoryPending || aiLoading ? (
               aiLoading ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="size-4 animate-pulse text-brand-500" />
+                  <Sparkles className="size-4 animate-pulse text-violet-500" />
                   Finding products that match what you're looking for…
                 </span>
               ) : (
@@ -539,7 +547,7 @@ export default function Products() {
               )
             ) : (
               <>
-                <span className="font-semibold text-foreground">{payload.totalCount}</span>{' '}
+                <span className="font-semibold text-slate-900">{payload.totalCount}</span>{' '}
                 {payload.totalCount === 1 ? 'product' : 'products'}
                 {activeCategory && <> in {activeCategory.name}</>}
                 {store && <> from {store.storeName}</>}
@@ -557,7 +565,7 @@ export default function Products() {
           ) : categoryPending || aiLoading ? (
             <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="overflow-hidden rounded-xl border border-border bg-card">
+                <div key={i} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                   <Skeleton className="aspect-square w-full rounded-none" />
                   <div className="space-y-2 p-3.5">
                     <Skeleton className="h-3 w-1/3" />
@@ -574,6 +582,7 @@ export default function Products() {
               wishedIds={wishlistLoaded ? wishedIds : new Set()}
               onAddToCart={handleAddToCart}
               onToggleWishlist={handleToggleWishlist}
+              onQuickView={setQuickViewProduct}
               emptyTitle={
                 store ? 'This store has no products yet' : query ? `No results for “${query}”` : 'No products match these filters'
               }
@@ -603,6 +612,15 @@ export default function Products() {
           )}
         </div>
       </div>
+
+      <ProductQuickView
+        product={quickViewProduct}
+        open={Boolean(quickViewProduct)}
+        onClose={() => setQuickViewProduct(null)}
+        wished={quickViewProduct ? wishedIds.has(quickViewProduct._id?.toString()) : false}
+        onToggleWishlist={handleToggleWishlist}
+        onAddToCart={handleQuickViewAdd}
+      />
     </div>
   )
 }

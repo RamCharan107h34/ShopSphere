@@ -9,7 +9,8 @@ Express + MongoDB (Mongoose) API for the ShopSphere multi-vendor marketplace.
 - **JWT + bcrypt** — auth (5 roles: customer, seller, admin, support, delivery)
 - **Multer + Cloudinary** — image uploads
 - **Cohere API** — AI product descriptions + semantic search
-- **Pure-JS DSA utilities** — MaxHeap (top picks), mergeSort/binarySearch (price position), hash map (bulk stock)
+- **Pure-JS DSA utilities** — MaxHeap (top picks + personalized recommendations), mergeSort/binarySearch (price position), hash map (bulk stock)
+- **Personalization** — recently viewed categories (recorded per user) plus purchased categories rerank the home carousel; guests fall back to top-rated
 
 ## Setup
 
@@ -36,7 +37,7 @@ Requires a running MongoDB at `DB_URL` (default `mongodb://127.0.0.1:27017/shops
 | Prefix | Area |
 |---|---|
 | `/user-api` | Register, login, profile, admin user management |
-| `/product-api` | Products, categories, uploads, top-picks, price-position, bulk-stock |
+| `/product-api` | Products, categories, uploads, top-picks, recommendations, price-position, bulk-stock |
 | `/category-api` | Categories |
 | `/cart-api`, `/wishlist-api` | Customer cart & wishlist |
 | `/order-api` | Checkout, order status flow (customer/seller/admin) |
@@ -52,8 +53,19 @@ All routes mount under these prefixes in `server.js`; unknown paths return 404, 
 
 ## Order status flow
 
-`placed → confirmed → packed → shipped` (seller) → delivery: `assigned → picked_up → in_transit → delivered`. Each transition is validated; delivering the last vendor sub-order auto-updates the order to `delivered`.
+Sellers own fulfilment up to packing: `placed → confirmed → packed`, then hand the packed sub-order to a delivery partner (a user with the `delivery` role). The partner owns the delivery leg: shipment `assigned → shipped (picked up from seller) → out_for_delivery → delivered`, which mirrors onto the sub-order. Each transition is validated; delivering the last vendor sub-order auto-updates the order to `delivered`.
 
 ## Dev utilities
 
 - `node --env-file=.env reset-test-passwords.js <pw>` — resets seeded `@test.com` accounts to a known password.
+
+## Test accounts
+
+| Role | Email | Password | Lands on |
+|---|---|---|---|
+| Customer | customer@test.com | Test@1234 | storefront + /account |
+| Seller | seller@test.com | Test@1234 | /seller dashboard |
+| Admin | admin@test.com | Test@1234 | /admin dashboard |
+| Support agent | agent_1788582441711@test.com | Test@1234 | /support desk |
+| Delivery partner | delivery@test.com | Test@1234 | /delivery dashboard |
+mongodb+srv://<db_username>:jy64y61cRAkPFsH6@shopsphere-01.elwg8sc.mongodb.net/?appName=ShopSphere-01

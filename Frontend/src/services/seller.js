@@ -57,6 +57,18 @@ export const updateSubOrderStatus = async (orderId, subOrderId, { status, tracki
   return data.payload
 }
 
+// ---- Delivery hand-off (seller → delivery partner) -------------------------
+// POST /delivery-api/assignments  body: { orderId, subOrderId, deliveryPartnerId }
+export const fetchDeliveryPartners = async () => {
+  const { data } = await api.get('/delivery-api/partners')
+  return data.payload
+}
+
+export const assignDelivery = async ({ orderId, subOrderId, deliveryPartnerId }) => {
+  const { data } = await api.post('/delivery-api/assignments', { orderId, subOrderId, deliveryPartnerId })
+  return data.payload
+}
+
 // ---- Returns -----------------------------------------------------------------
 export const fetchSellerReturns = async () => {
   const { data } = await api.get('/return-api/seller/returns')

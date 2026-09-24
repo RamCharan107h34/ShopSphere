@@ -5,18 +5,28 @@ import { OrderModel } from "../models/OrderModel.js";
 import { UserModel } from "../models/UserModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { validate } from "../middlewares/validate.js";
+import { ticketSchema } from "../validators/schemas.js";
+import { recordAudit } from "../utils/audit.js";
+import { notify, notifyMany } from "../utils/notify.js";
 
 export const supportApp = exp.Router();
 
-// 1. Any logged-in user: Raise a Support Ticket
-supportApp.post("/tickets", verifyToken, async (req, res) => {
-    const { category = "general", subject, description, orderId, subOrderId, priority = "medium" } = req.body;
+// Everyone who could act on a new ticket: the support bench plus admins (who
+// own escalations). Resolved per event rather than cached so a newly onboarded
+// agent starts receiving tickets immediately.
+const staffIds = async () => {
+    const staff = await UserModel.find({
+        role: { $in: ["support", "admin"] },
+        isActive: true
+    }).select("_id");
 
-    if (!subject || !description) {
-        return res.status(400).json({
-            message: "Subject and description are required"
-        });
-    }
+    return staff.map((user) => user._id);
+};
+
+// 1. Any logged-in user: Raise a Support Ticket
+supportApp.post("/tickets", verifyToken, validate({ body: ticketSchema }), async (req, res) => {
+    const { category = "general", subject, description, orderId, subOrderId, priority = "medium" } = req.body;
 
     // If the ticket is linked to an order, the order must belong to the creator
     if (orderId && req.user.role !== "admin") {
@@ -44,6 +54,14 @@ supportApp.post("/tickets", verifyToken, async (req, res) => {
     });
 
     const savedTicket = await ticketDoc.save();
+
+    await notifyMany(await staffIds(), {
+        type: "ticket",
+        title: `New ${priority} priority ticket: ${savedTicket.subject}`,
+        message: `${req.user.name} raised a ${category.replace("_", " ")} ticket.`,
+        link: `/support/tickets/${savedTicket._id}`,
+        entityId: savedTicket._id
+    });
 
     res.status(201).json({
         message: "Support ticket created successfully",
@@ -154,6 +172,24 @@ supportApp.put("/tickets/:id/assign", verifyToken, verifyRole("support", "admin"
     ticket.assignedTo = agent._id;
     await ticket.save();
 
+    await recordAudit({
+        req,
+        action: "ticket.assign",
+        targetType: "SupportTicket",
+        targetId: ticket._id,
+        description: `Ticket "${ticket.subject}" assigned to ${agent.name}`,
+        metadata: { agentId: String(agent._id), agentName: agent.name }
+    });
+
+    await notify({
+        recipientId: agent._id,
+        type: "ticket",
+        title: "Ticket assigned to you",
+        message: `"${ticket.subject}" is now in your queue.`,
+        link: `/support/tickets/${ticket._id}`,
+        entityId: ticket._id
+    });
+
     res.status(200).json({
         message: `Ticket assigned to ${agent.name}`,
         payload: ticket
@@ -205,6 +241,25 @@ supportApp.put("/tickets/:id/status", verifyToken, verifyRole("support", "admin"
 
     await ticket.save();
 
+    await recordAudit({
+        req,
+        action: "ticket.status",
+        targetType: "SupportTicket",
+        targetId: ticket._id,
+        description: `Ticket "${ticket.subject}" moved to '${status}'`,
+        metadata: { status, resolutionNote: ticket.resolutionNote || "" }
+    });
+
+    // The reporter is the one person guaranteed to care, so they are always told.
+    await notify({
+        recipientId: ticket.customerId,
+        type: "ticket",
+        title: `Ticket ${status.replace("_", " ")}`,
+        message: `Your ticket "${ticket.subject}" is now ${status.replace("_", " ")}.`,
+        link: `/account/support/${ticket._id}`,
+        entityId: ticket._id
+    });
+
     res.status(200).json({
         message: `Ticket status updated to '${status}'`,
         payload: ticket
@@ -246,6 +301,38 @@ supportApp.post("/tickets/:id/replies", verifyToken, async (req, res) => {
     });
 
     await ticket.save();
+
+    // Tell the other side of the conversation: staff replies reach the reporter,
+    // a reporter's reply reaches whoever owns the ticket (or the whole bench).
+    if (isStaff) {
+        if (!isOwner) {
+            await notify({
+                recipientId: ticket.customerId,
+                type: "ticket",
+                title: `New reply on "${ticket.subject}"`,
+                message: `${req.user.name} replied to your ticket.`,
+                link: `/account/support/${ticket._id}`,
+                entityId: ticket._id
+            });
+        }
+    } else if (ticket.assignedTo) {
+        await notify({
+            recipientId: ticket.assignedTo,
+            type: "ticket",
+            title: `New reply on "${ticket.subject}"`,
+            message: `${req.user.name} replied.`,
+            link: `/support/tickets/${ticket._id}`,
+            entityId: ticket._id
+        });
+    } else {
+        await notifyMany(await staffIds(), {
+            type: "ticket",
+            title: `New reply on "${ticket.subject}"`,
+            message: `${req.user.name} replied to an unassigned ticket.`,
+            link: `/support/tickets/${ticket._id}`,
+            entityId: ticket._id
+        });
+    }
 
     res.status(201).json({
         message: "Reply added successfully",

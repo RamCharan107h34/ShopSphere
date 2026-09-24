@@ -18,6 +18,20 @@ export const fetchTopPicks = async (limit = 8) => {
   return data.payload.topPicks.map((pick) => pick.product)
 }
 
+// GET /product-api/recommendations — the home carousel's source. Public: guests
+// (and customers with no history yet) get the top-rated rail, while a signed-in
+// customer's recently viewed + purchased categories rerank it. `personalized`
+// says which one happened and `basedOn` names the categories that drove it.
+export const fetchRecommendations = async (limit = 8) => {
+  const { data } = await api.get('/product-api/recommendations', { params: { limit } })
+  return data.payload // { products, personalized, basedOn }
+}
+
+// PUT /product-api/products/:id/view — records a view for personalization.
+// Only meaningful while signed in, and never worth surfacing an error for, so
+// callers fire it and forget it.
+export const recordProductView = (productId) => api.put(`/product-api/products/${productId}/view`)
+
 // ---- Customer actions (authenticated) ---------------------------------
 
 export const addToCart = (productId, quantity = 1, variantId) =>

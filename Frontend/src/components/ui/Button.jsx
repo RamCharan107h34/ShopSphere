@@ -1,24 +1,28 @@
 import { cva } from 'class-variance-authority'
 import { Loader2 } from 'lucide-react'
 import { cn } from '../../lib/utils.js'
+import { useAccent } from '../../design/context.js'
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-[0.98]',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:scale-[0.98]',
-        outline: 'border border-border bg-card text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground active:scale-[0.98]',
-        ghost: 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98]',
-        success: 'bg-success text-white shadow-sm hover:brightness-95 active:scale-[0.98]',
+        // `default` resolves to the surrounding workspace accent at runtime
+        default: 'text-white shadow-sm hover:shadow-lg',
+        outline:
+          'border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900',
+        ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+        accent: 'bg-teal-700 text-white shadow-sm hover:bg-teal-800 hover:shadow-lg',
+        coral: 'bg-coral text-white shadow-sm hover:bg-coral-strong hover:shadow-lg',
+        destructive: 'bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-lg',
+        success: 'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 hover:shadow-lg',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-11 rounded-lg px-6 text-base',
-        icon: 'h-10 w-10',
+        sm: 'h-9 px-3.5 text-[13px]',
+        default: 'h-10 px-4',
+        lg: 'h-12 rounded-xl px-6 text-[15px]',
+        icon: 'size-10',
       },
     },
     defaultVariants: {
@@ -29,9 +33,18 @@ export const buttonVariants = cva(
 )
 
 export function Button({ className, variant, size, loading, disabled, children, ...props }) {
+  const accent = useAccent()
+  const isPrimary = !variant || variant === 'default'
+
   return (
     <button
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={cn(
+        buttonVariants({ variant, size }),
+        // Inside a role workspace the primary button adopts that role's accent
+        isPrimary && `${accent.classes.gradient} ${accent.classes.glow}`,
+        accent.classes.focus,
+        className,
+      )}
       disabled={disabled || loading}
       {...props}
     >

@@ -6,10 +6,15 @@ import { StoreModel } from "../models/StoreModel.js";
 import { UserModel } from "../models/UserModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { recordAudit } from "../utils/audit.js";
+import { notify } from "../utils/notify.js";
+import { createSettlementForSubOrder } from "../utils/settlement.js";
 
 export const deliveryApp = exp.Router();
 
-// 1. Seller / Admin: Create a Delivery Assignment for a Shipped Vendor Sub-Order
+// 1. Seller / Admin: Hand a Packed Vendor Sub-Order to a Delivery Partner
+// Sellers stop at "packed"; the delivery partner owns everything after that
+// (shipped → out_for_delivery → delivered).
 deliveryApp.post("/assignments", verifyToken, verifyRole("seller", "admin"), async (req, res) => {
     const { orderId, subOrderId, deliveryPartnerId, note } = req.body;
 
@@ -48,10 +53,10 @@ deliveryApp.post("/assignments", verifyToken, verifyRole("seller", "admin"), asy
         });
     }
 
-    // Only shipped sub-orders can be handed to a delivery partner
-    if (subOrder.status !== "shipped") {
+    // Only packed sub-orders can be handed to a delivery partner
+    if (subOrder.status !== "packed") {
         return res.status(400).json({
-            message: `Delivery can only be assigned to 'shipped' sub-orders. Current status: '${subOrder.status}'`
+            message: `Delivery can only be assigned to 'packed' sub-orders. Current status: '${subOrder.status}'`
         });
     }
 
@@ -77,6 +82,9 @@ deliveryApp.post("/assignments", verifyToken, verifyRole("seller", "admin"), asy
         storeId: subOrder.storeId,
         sellerId: subOrder.sellerId,
         deliveryPartnerId,
+        // The assignment itself is the first history entry — the partner is
+        // notified the moment the row exists.
+        statusHistory: [{ status: "assigned", note: note || "" }],
         items: subOrder.items.map(item => ({
             productId: item.productId,
             title: item.title,
@@ -108,8 +116,30 @@ deliveryApp.post("/assignments", verifyToken, verifyRole("seller", "admin"), asy
     subOrder.deliveryPartnerId = deliveryPartnerId;
     await order.save();
 
+    await recordAudit({
+        req,
+        action: "delivery.assign",
+        targetType: "Delivery",
+        targetId: savedDelivery._id,
+        description: `Assigned order ${order.orderNumber} to ${partner.name}`,
+        metadata: {
+            orderNumber: order.orderNumber,
+            subOrderId: String(subOrder._id),
+            deliveryPartnerId: String(deliveryPartnerId)
+        }
+    });
+
+    await notify({
+        recipientId: deliveryPartnerId,
+        type: "delivery",
+        title: "New pickup assigned",
+        message: `Order ${order.orderNumber} is ready for pickup at ${store ? store.storeName : "the seller"}.`,
+        link: `/delivery/deliveries/${savedDelivery._id}`,
+        entityId: savedDelivery._id
+    });
+
     res.status(201).json({
-        message: `Delivery assigned to ${partner.name}`,
+        message: `Handover complete — ${partner.name} will pick up this shipment`,
         payload: savedDelivery
     });
 });
@@ -205,10 +235,11 @@ deliveryApp.get("/deliveries/:id", verifyToken, async (req, res) => {
 });
 
 // 6. Delivery Partner / Admin: Update Shipment Status (and auto-deliver the order)
+// Partner flow: assigned → shipped (picked up from seller) → out_for_delivery → delivered
 deliveryApp.put("/deliveries/:id/status", verifyToken, verifyRole("delivery", "admin"), async (req, res) => {
     const { status, note } = req.body;
 
-    const validStatuses = ["assigned", "picked_up", "in_transit", "delivered"];
+    const validStatuses = ["shipped", "out_for_delivery", "delivered"];
     if (!validStatuses.includes(status)) {
         return res.status(400).json({
             message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`
@@ -231,9 +262,9 @@ deliveryApp.put("/deliveries/:id/status", verifyToken, verifyRole("delivery", "a
 
     // State machine guards
     const allowedTransitions = {
-        assigned: ["picked_up"],
-        picked_up: ["in_transit"],
-        in_transit: ["delivered"],
+        assigned: ["shipped"],
+        shipped: ["out_for_delivery"],
+        out_for_delivery: ["delivered"],
         delivered: []
     };
 
@@ -245,37 +276,74 @@ deliveryApp.put("/deliveries/:id/status", verifyToken, verifyRole("delivery", "a
 
     delivery.status = status;
     if (note) delivery.note = note;
-
-    // On final delivery, mark the vendor sub-order delivered & recompute overall order status
     if (status === "delivered") {
         delivery.deliveredAt = new Date();
+    }
+    delivery.statusHistory.push({ status, note: note || "" });
 
-        const order = await OrderModel.findById(delivery.orderId);
-        if (order) {
-            const subOrder = order.vendorOrders.id(delivery.subOrderId);
-            if (subOrder && subOrder.status === "shipped") {
-                subOrder.status = "delivered";
+    // Mirror the delivery leg onto the vendor sub-order so customers and sellers
+    // see live progress (packed → shipped → out_for_delivery → delivered). Never
+    // overwrite cancelled sub-orders or ones already in a return flow.
+    const order = await OrderModel.findById(delivery.orderId);
+    if (order) {
+        const subOrder = order.vendorOrders.id(delivery.subOrderId);
+        if (subOrder && !["cancelled", "return_requested", "returned", "refunded", "delivered"].includes(subOrder.status)) {
+            subOrder.status = status;
 
-                const allDelivered = order.vendorOrders.every(vo => vo.status === "delivered");
-                const allCancelled = order.vendorOrders.every(vo => vo.status === "cancelled");
-                const anyShipped = order.vendorOrders.some(vo => vo.status === "shipped");
+            const allDelivered = order.vendorOrders.every(vo => vo.status === "delivered");
+            const allCancelled = order.vendorOrders.every(vo => vo.status === "cancelled");
+            const anyShipped = order.vendorOrders.some(vo => ["shipped", "out_for_delivery"].includes(vo.status));
 
-                if (allDelivered) {
-                    order.overallStatus = "delivered";
-                } else if (allCancelled) {
-                    order.overallStatus = "cancelled";
-                } else if (anyShipped) {
-                    order.overallStatus = "shipped";
-                } else {
-                    order.overallStatus = "processing";
-                }
+            if (allDelivered) {
+                order.overallStatus = "delivered";
+            } else if (allCancelled) {
+                order.overallStatus = "cancelled";
+            } else if (anyShipped) {
+                order.overallStatus = "shipped";
+            } else {
+                order.overallStatus = "processing";
+            }
 
-                await order.save();
+            await order.save();
+
+            // Delivery is the point of no return for a sale, so this is where the
+            // seller's money becomes real: write the commission-split ledger row.
+            // Only the final sub-order state counts — cancelled/returned
+            // sub-orders never reach here, so they never generate a settlement.
+            if (status === "delivered") {
+                await createSettlementForSubOrder({
+                    orderId: order._id,
+                    subOrderId: subOrder._id
+                });
             }
         }
     }
 
     await delivery.save();
+
+    await recordAudit({
+        req,
+        action: "delivery.status_change",
+        targetType: "Delivery",
+        targetId: delivery._id,
+        description: `Shipment for order ${order ? order.orderNumber : delivery.orderId} marked '${status}'`,
+        metadata: {
+            orderNumber: order ? order.orderNumber : "",
+            subOrderId: String(delivery.subOrderId),
+            status
+        }
+    });
+
+    if (order) {
+        await notify({
+            recipientId: order.customerId,
+            type: "delivery",
+            title: `Shipment ${status.replace(/_/g, " ")}`,
+            message: `Order ${order.orderNumber} is now '${status.replace(/_/g, " ")}'.`,
+            link: `/account/orders/${order._id}`,
+            entityId: delivery._id
+        });
+    }
 
     res.status(200).json({
         message: `Shipment status updated to '${status}'`,

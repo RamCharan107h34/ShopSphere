@@ -25,7 +25,13 @@ import { Badge } from '../components/ui/Badge.jsx'
 import { Skeleton } from '../components/ui/Skeleton.jsx'
 import { ProductGrid } from '../components/customer/ProductGrid.jsx'
 import { SectionHeader } from '../components/customer/SectionHeader.jsx'
-import { addToCart, addToWishlist, fetchProducts, removeFromWishlist } from '../services/catalog.js'
+import {
+  addToCart,
+  addToWishlist,
+  fetchProducts,
+  recordProductView,
+  removeFromWishlist,
+} from '../services/catalog.js'
 import { getErrorMessage } from '../services/api.js'
 import api from '../services/api.js'
 import { cn, isPlaceholderImage } from '../lib/utils.js'
@@ -51,10 +57,10 @@ function Gallery({ product }) {
   // No real images available → branded fallback tile
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 via-background to-fuchsia-50">
+      <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 via-slate-50 to-fuchsia-50">
         <div className="flex flex-col items-center gap-2 px-6 text-center">
-          <ImageOff className="size-10 text-brand-300" />
-          <p className="text-sm font-medium text-muted-foreground">{product.title}</p>
+          <ImageOff className="size-10 text-violet-300" />
+          <p className="text-sm font-medium text-slate-500">{product.title}</p>
         </div>
       </div>
     )
@@ -66,10 +72,10 @@ function Gallery({ product }) {
   return (
     <div>
       {/* Main image */}
-      <div className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="group relative aspect-square overflow-hidden rounded-2xl border border-slate-200 bg-white">
         {activeFailed ? (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-50 via-background to-fuchsia-50">
-            <ImageOff className="size-10 text-brand-300" />
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-violet-50 via-slate-50 to-fuchsia-50">
+            <ImageOff className="size-10 text-violet-300" />
           </div>
         ) : (
           <img
@@ -110,11 +116,11 @@ function Gallery({ product }) {
               aria-label={`Image ${index + 1}`}
               className={cn(
                 'size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
-                index === active ? 'border-primary' : 'border-transparent hover:border-border',
+                index === active ? 'border-violet-500' : 'border-transparent hover:border-slate-200',
               )}
             >
               {failed.has(src) ? (
-                <div className="h-full w-full bg-muted" />
+                <div className="h-full w-full bg-slate-100" />
               ) : (
                 <img
                   src={src}
@@ -134,7 +140,7 @@ function Gallery({ product }) {
 /* ---------------- Rating summary chip ---------------- */
 function RatingSummary({ rating, count }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
       <p className="text-3xl font-extrabold tracking-tight">{rating || '—'}</p>
       <div>
         <span className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
@@ -148,7 +154,7 @@ function RatingSummary({ rating, count }) {
             />
           ))}
         </span>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="mt-0.5 text-xs text-slate-500">
           {count} verified review{count === 1 ? '' : 's'}
         </p>
       </div>
@@ -158,7 +164,7 @@ function RatingSummary({ rating, count }) {
 
 function ReviewCard({ review }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-semibold">{review.customerId?.name || 'Customer'}</p>
         <span className="flex items-center gap-1 text-xs font-medium">
@@ -166,8 +172,8 @@ function ReviewCard({ review }) {
           {review.rating}.0
         </span>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-foreground/90">{review.comment}</p>
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2 text-sm leading-relaxed text-slate-900/90">{review.comment}</p>
+      <p className="mt-2 text-[11px] text-slate-500">
         {new Date(review.createdAt).toLocaleDateString('en-IN', {
           day: 'numeric',
           month: 'short',
@@ -176,9 +182,9 @@ function ReviewCard({ review }) {
         · Verified purchase
       </p>
       {review.sellerReply && (
-        <div className="mt-3 rounded-lg bg-accent/60 p-3">
-          <p className="text-xs font-semibold text-accent-foreground">Seller response</p>
-          <p className="mt-1 text-sm text-foreground/90">{review.sellerReply}</p>
+        <div className="mt-3 rounded-lg bg-violet-50/60 p-3">
+          <p className="text-xs font-semibold text-violet-700">Seller response</p>
+          <p className="mt-1 text-sm text-slate-900/90">{review.sellerReply}</p>
         </div>
       )}
     </div>
@@ -188,12 +194,12 @@ function ReviewCard({ review }) {
 /* ---------------- Quantity stepper ---------------- */
 function Quantity({ value, onChange, max }) {
   return (
-    <div className="inline-flex items-center rounded-lg border border-border bg-card">
+    <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white">
       <button
         onClick={() => onChange(Math.max(1, value - 1))}
         disabled={value <= 1}
         aria-label="Decrease quantity"
-        className="flex size-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+        className="flex size-10 items-center justify-center text-slate-500 transition-colors hover:text-slate-900 disabled:opacity-40"
       >
         <Minus className="size-4" />
       </button>
@@ -202,7 +208,7 @@ function Quantity({ value, onChange, max }) {
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
         aria-label="Increase quantity"
-        className="flex size-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+        className="flex size-10 items-center justify-center text-slate-500 transition-colors hover:text-slate-900 disabled:opacity-40"
       >
         <Plus className="size-4" />
       </button>
@@ -252,6 +258,16 @@ export default function ProductDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [product?._id],
   )
+
+  // ---- Record the view (powers the personalized home carousel) ----
+  // Signed-in only: the backend keeps the history on the user document.
+  // Fire-and-forget, because tracking must never make the page look broken.
+  const userId = user?._id
+  useEffect(() => {
+    if (userId && product?._id) {
+      recordProductView(product._id).catch(() => {})
+    }
+  }, [userId, product?._id])
 
   // ---- Wishlist membership ---------------------------------------
   const [wished, setWished] = useState(false)
@@ -308,10 +324,10 @@ export default function ProductDetails() {
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6">
-        <p className="text-6xl font-extrabold tracking-tight text-primary">404</p>
+        <p className="text-6xl font-extrabold tracking-tight text-violet-600">404</p>
         <h1 className="mt-3 text-2xl font-bold">Product not found</h1>
-        <p className="mt-2 text-muted-foreground">This product may have been removed by its seller.</p>
-        <Link to="/products" className="mt-6 inline-block font-medium text-primary hover:underline">
+        <p className="mt-2 text-slate-500">This product may have been removed by its seller.</p>
+        <Link to="/products" className="mt-6 inline-block font-medium text-violet-600 hover:underline">
           Browse all products →
         </Link>
       </div>
@@ -393,20 +409,20 @@ export default function ProductDetails() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 overflow-hidden text-sm text-muted-foreground">
-        <Link to="/" className="shrink-0 transition-colors hover:text-foreground">Home</Link>
-        <span className="text-muted-foreground/50">/</span>
-        <Link to="/products" className="shrink-0 transition-colors hover:text-foreground">Products</Link>
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 overflow-hidden text-sm text-slate-500">
+        <Link to="/" className="shrink-0 transition-colors hover:text-slate-900">Home</Link>
+        <span className="text-slate-400">/</span>
+        <Link to="/products" className="shrink-0 transition-colors hover:text-slate-900">Products</Link>
         {categorySlug && (
           <>
-            <span className="text-muted-foreground/50">/</span>
-            <Link to={`/category/${categorySlug}`} className="shrink-0 transition-colors hover:text-foreground">
+            <span className="text-slate-400">/</span>
+            <Link to={`/category/${categorySlug}`} className="shrink-0 transition-colors hover:text-slate-900">
               {product.category?.name}
             </Link>
           </>
         )}
-        <span className="text-muted-foreground/50">/</span>
-        <span className="truncate font-medium text-foreground">{product.title}</span>
+        <span className="text-slate-400">/</span>
+        <span className="truncate font-medium text-slate-900">{product.title}</span>
       </nav>
 
       {/* Main: gallery + purchase panel */}
@@ -415,7 +431,7 @@ export default function ProductDetails() {
 
         <div>
           {product.brand && (
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
               {product.brand}
             </p>
           )}
@@ -423,7 +439,7 @@ export default function ProductDetails() {
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <RatingSummary rating={product.rating} count={product.reviewsCount} />
-            <a href="#reviews" className="text-sm font-medium text-primary hover:underline">
+            <a href="#reviews" className="text-sm font-medium text-violet-600 hover:underline">
               Read all reviews
             </a>
           </div>
@@ -433,25 +449,25 @@ export default function ProductDetails() {
             <p className="text-3xl font-extrabold tracking-tight">{formatPrice(displayPrice)}</p>
             {discount && (
               <>
-                <p className="text-lg text-muted-foreground line-through">{formatPrice(originalDisplayPrice)}</p>
+                <p className="text-lg text-slate-500 line-through">{formatPrice(originalDisplayPrice)}</p>
                 <Badge variant="danger">-{discount}%</Badge>
               </>
             )}
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Inclusive of all taxes</p>
+          <p className="mt-1 text-xs text-slate-500">Inclusive of all taxes</p>
 
           {/* Stock */}
           <div className="mt-4 flex items-center gap-2 text-sm">
             {!outOfStock ? (
               <>
-                <CheckCircle2 className="size-4 text-success" />
-                <span className="font-medium text-success">In stock</span>
+                <CheckCircle2 className="size-4 text-emerald-600" />
+                <span className="font-medium text-emerald-600">In stock</span>
                 {displayStock <= (product.lowStockThreshold ?? 5) && (
-                  <span className="font-medium text-warning">· only {displayStock} left</span>
+                  <span className="font-medium text-amber-600">· only {displayStock} left</span>
                 )}
               </>
             ) : (
-              <span className="font-medium text-destructive">Currently out of stock</span>
+              <span className="font-medium text-red-600">Currently out of stock</span>
             )}
           </div>
 
@@ -459,7 +475,7 @@ export default function ProductDetails() {
           {variants.length > 0 && (
             <div className="mt-6">
               <p className="mb-2 text-sm font-semibold">
-                Variant <span className="font-normal text-muted-foreground">· {variants.length} options</span>
+                Variant <span className="font-normal text-slate-500">· {variants.length} options</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {variants.map((item, index) => {
@@ -477,8 +493,8 @@ export default function ProductDetails() {
                       className={cn(
                         'rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40',
                         selected
-                          ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
-                          : 'border-border bg-card hover:border-primary/50',
+                          ? 'border-violet-500 bg-violet-50 text-violet-600 ring-1 ring-violet-500'
+                          : 'border-slate-200 bg-white hover:border-violet-300',
                       )}
                     >
                       {item.name}
@@ -512,36 +528,36 @@ export default function ProductDetails() {
               size="lg"
               disabled={outOfStock}
               onClick={() => addToCartAction(true)}
-              className="bg-gradient-to-r from-brand-600 to-fuchsia-600 hover:from-brand-700 hover:to-fuchsia-700"
+              className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700"
             >
               Buy now
             </Button>
           </div>
-          <p className="mt-2.5 text-center text-xs text-muted-foreground sm:hidden">
+          <p className="mt-2.5 text-center text-xs text-slate-500 sm:hidden">
             Buy now adds to your cart — checkout arrives in the next step.
           </p>
 
           {/* Trust badges */}
-          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-border pt-5 text-center">
+          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-slate-200 pt-5 text-center">
             {[
               { icon: Truck, label: 'Fast delivery' },
               { icon: RotateCcw, label: '7-day returns' },
               { icon: ShieldCheck, label: 'Secure payment' },
             ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center gap-1.5 text-xs text-muted-foreground">
-                <item.icon className="size-5 text-primary" />
+              <div key={item.label} className="flex flex-col items-center gap-1.5 text-xs text-slate-500">
+                <item.icon className="size-5 text-violet-600" />
                 {item.label}
               </div>
             ))}
           </div>
 
           {/* Seller / store */}
-          <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+          <div className="mt-6 flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
               <Store className="size-6" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">Sold by</p>
+              <p className="text-xs text-slate-500">Sold by</p>
               <p className="truncate font-semibold">{product.storeId?.storeName || 'ShopSphere seller'}</p>
             </div>
             {product.storeId?._id && (
@@ -566,12 +582,12 @@ export default function ProductDetails() {
           transition={{ duration: 0.4 }}
         >
           <h2 className="text-xl font-bold tracking-tight">Description</h2>
-          <p className="mt-3 leading-relaxed text-muted-foreground">{product.description}</p>
+          <p className="mt-3 leading-relaxed text-slate-500">{product.description}</p>
           {product.aiGeneratedFeatures?.length > 0 && (
             <ul className="mt-4 space-y-2">
               {product.aiGeneratedFeatures.map((feature) => (
                 <li key={feature} className="flex items-start gap-2 text-sm">
-                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
                   {feature}
                 </li>
               ))}
@@ -586,7 +602,7 @@ export default function ProductDetails() {
           transition={{ duration: 0.4, delay: 0.05 }}
         >
           <h2 className="text-xl font-bold tracking-tight">Specifications</h2>
-          <dl className="mt-3 overflow-hidden rounded-xl border border-border">
+          <dl className="mt-3 overflow-hidden rounded-xl border border-slate-200">
             {[
               ['Brand', product.brand || '—'],
               ['Category', product.category?.name || '—'],
@@ -601,11 +617,11 @@ export default function ProductDetails() {
               <div
                 key={label}
                 className={cn(
-                  'flex justify-between gap-4 bg-card px-4 py-2.5 text-sm',
-                  index % 2 === 1 && 'bg-muted/30',
+                  'flex justify-between gap-4 bg-white px-4 py-2.5 text-sm',
+                  index % 2 === 1 && 'bg-slate-50',
                 )}
               >
-                <dt className="text-muted-foreground">{label}</dt>
+                <dt className="text-slate-500">{label}</dt>
                 <dd className="text-right font-medium">{value}</dd>
               </div>
             ))}
@@ -619,7 +635,7 @@ export default function ProductDetails() {
           title="Customer reviews"
           subtitle="Only verified purchases can leave a review"
           action={
-            <Link to={user ? '#reviews' : '/login'} className="text-sm font-medium text-primary hover:underline">
+            <Link to={user ? '#reviews' : '/login'} className="text-sm font-medium text-violet-600 hover:underline">
               {user ? 'Write a review' : 'Sign in to review'}
             </Link>
           }
@@ -638,9 +654,9 @@ export default function ProductDetails() {
             ) : reviewsState.data?.length > 0 ? (
               reviewsState.data.map((review) => <ReviewCard key={review._id} review={review} />)
             ) : (
-              <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
+              <div className="rounded-xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
                 <p className="font-semibold">No reviews yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-slate-500">
                   Purchased this product? Your review helps other shoppers decide.
                 </p>
               </div>
@@ -663,7 +679,7 @@ export default function ProductDetails() {
               subtitle="More from this category"
               action={
                 categorySlug ? (
-                  <Link to={`/category/${categorySlug}`} className="text-sm font-medium text-primary hover:underline">
+                  <Link to={`/category/${categorySlug}`} className="text-sm font-medium text-violet-600 hover:underline">
                     View all
                   </Link>
                 ) : undefined

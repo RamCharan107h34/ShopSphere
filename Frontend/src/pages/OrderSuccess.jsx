@@ -28,7 +28,7 @@ const PAYMENT_LABELS = {
   NET_BANKING: 'Net banking',
 }
 
-const STATUS_STEPS = ['placed', 'confirmed', 'packed', 'shipped', 'delivered']
+const STATUS_STEPS = ['placed', 'confirmed', 'packed', 'shipped', 'out for delivery', 'delivered']
 
 function formatDate(value) {
   if (!value) return ''
@@ -80,7 +80,7 @@ export default function OrderSuccess() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
         <h1 className="text-2xl font-bold">Order not found</h1>
-        <p className="mt-2 text-muted-foreground">We couldn't find that order for your account.</p>
+        <p className="mt-2 text-slate-500">We couldn't find that order for your account.</p>
         <Link to="/products" className="mt-8 inline-block">
           <Button size="lg">
             Continue shopping <ArrowRight className="size-4" />
@@ -107,19 +107,19 @@ export default function OrderSuccess() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 0.1 }}
-          className="flex size-20 items-center justify-center rounded-full bg-success/15"
+          className="flex size-20 items-center justify-center rounded-full bg-emerald-100"
         >
           <motion.span
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.25 }}
           >
-            <CheckCircle2 className="size-11 text-success-700" />
+            <CheckCircle2 className="size-11 text-emerald-700" />
           </motion.span>
         </motion.span>
 
         <h1 className="mt-5 text-3xl font-bold tracking-tight">Order placed successfully!</h1>
-        <p className="mt-2 max-w-md text-muted-foreground">
+        <p className="mt-2 max-w-md text-slate-500">
           Thank you for shopping with us. We've sent a confirmation and will keep you posted on every step.
         </p>
 
@@ -136,7 +136,7 @@ export default function OrderSuccess() {
       {/* Order facts */}
       <div className="mt-10 grid gap-4 sm:grid-cols-3">
         <Card className="p-4">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">
             <Package className="size-3.5" /> Items
           </p>
           <p className="mt-1.5 text-lg font-bold">
@@ -144,13 +144,13 @@ export default function OrderSuccess() {
           </p>
         </Card>
         <Card className="p-4">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">
             <CreditCard className="size-3.5" /> Payment
           </p>
           <p className="mt-1.5 text-lg font-bold">{PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod}</p>
         </Card>
         <Card className="p-4">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">
             <BadgeCheck className="size-3.5" /> Status
           </p>
           <p className="mt-1.5 text-lg font-bold capitalize">{order.overallStatus}</p>
@@ -174,22 +174,22 @@ export default function OrderSuccess() {
                         onError={(event) => {
                           event.currentTarget.style.display = 'none'
                         }}
-                        className="size-14 rounded-lg object-cover ring-1 ring-border"
+                        className="size-14 rounded-lg object-cover ring-1 ring-slate-200"
                       />
                     ) : (
-                      <div className="flex size-14 items-center justify-center rounded-lg bg-muted">
-                        <ShoppingBag className="size-5 text-muted-foreground/60" />
+                      <div className="flex size-14 items-center justify-center rounded-lg bg-slate-100">
+                        <ShoppingBag className="size-5 text-slate-500/60" />
                       </div>
                     )}
-                    <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <Link to={`/product/${item.productId}`} className="line-clamp-1 text-sm font-medium hover:text-primary">
+                    <Link to={`/product/${item.productId}`} className="line-clamp-1 text-sm font-medium hover:text-violet-600">
                       {item.title}
                     </Link>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-slate-500">
                       {item.variantName ? `${item.variantName} · ` : ''}
                       {formatPrice(item.price)} each
                     </p>
@@ -205,21 +205,21 @@ export default function OrderSuccess() {
         <Card className="p-5">
           <h2 className="font-semibold">Amount paid</h2>
           <div className="mt-4 space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
+            <div className="flex justify-between text-slate-500">
               <span>Subtotal</span>
               <span>{formatPrice(order.totalAmount + (order.discountAmount || 0))}</span>
             </div>
             {order.discountAmount > 0 && (
-              <div className="flex justify-between text-success-700">
+              <div className="flex justify-between text-emerald-700">
                 <span>Coupon {order.couponCode && `(${order.couponCode})`}</span>
                 <span>−{formatPrice(order.discountAmount)}</span>
               </div>
             )}
-            <div className="flex justify-between text-muted-foreground">
+            <div className="flex justify-between text-slate-500">
               <span>Delivery</span>
-              <span className="text-success-700">Free</span>
+              <span className="text-emerald-700">Free</span>
             </div>
-            <div className="flex justify-between border-t border-dashed border-border pt-2 text-base font-bold">
+            <div className="flex justify-between border-t border-dashed border-slate-200 pt-2 text-base font-bold">
               <span>Total</span>
               <span>{formatPrice(order.totalAmount)}</span>
             </div>
@@ -229,16 +229,16 @@ export default function OrderSuccess() {
 
       {/* Delivery address */}
       <Card className="mt-4 flex items-start gap-3 p-5 sm:p-6">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <MapPin className="size-4.5 text-primary" />
+        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-violet-50">
+          <MapPin className="size-4.5 text-violet-600" />
         </span>
         <div>
           <h2 className="font-semibold">Delivering to</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-slate-500">
             {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
             {order.shippingAddress.pincode}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">Phone: {order.shippingAddress.phone}</p>
+          <p className="mt-1 text-sm text-slate-500">Phone: {order.shippingAddress.phone}</p>
         </div>
       </Card>
 
@@ -253,8 +253,8 @@ export default function OrderSuccess() {
                 <span
                   className={
                     reached
-                      ? 'flex size-6 shrink-0 items-center justify-center rounded-full bg-success/15 text-success-700'
-                      : 'flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground'
+                      ? 'flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700'
+                      : 'flex size-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500'
                   }
                 >
                   {index === STATUS_STEPS.length - 1 ? (
@@ -263,7 +263,7 @@ export default function OrderSuccess() {
                     <span className="text-xs font-bold">{index + 1}</span>
                   )}
                 </span>
-                <span className={reached ? 'font-medium capitalize' : 'capitalize text-muted-foreground'}>{step}</span>
+                <span className={reached ? 'font-medium capitalize' : 'capitalize text-slate-500'}>{step}</span>
               </li>
             )
           })}

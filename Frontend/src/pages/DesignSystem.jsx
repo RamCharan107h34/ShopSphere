@@ -20,25 +20,25 @@ import { ShimmerButton } from '../components/magic/ShimmerButton.jsx'
 /* ------------------------------------------------------------------ */
 
 const brandSwatches = [
-  { name: 'brand-50', value: '#f5f3ff', className: 'bg-brand-50' },
-  { name: 'brand-100', value: '#ede9fe', className: 'bg-brand-100' },
-  { name: 'brand-200', value: '#ddd6fe', className: 'bg-brand-200' },
-  { name: 'brand-300', value: '#c4b5fd', className: 'bg-brand-300' },
-  { name: 'brand-400', value: '#a78bfa', className: 'bg-brand-400' },
-  { name: 'brand-500', value: '#8b5cf6', className: 'bg-brand-500' },
-  { name: 'brand-600', value: '#7c3aed', className: 'bg-brand-600' },
-  { name: 'brand-700', value: '#6d28d9', className: 'bg-brand-700' },
-  { name: 'brand-800', value: '#5b21b6', className: 'bg-brand-800' },
-  { name: 'brand-900', value: '#4c1d95', className: 'bg-brand-900' },
+  { name: 'violet-50', value: '#f5f3ff', className: 'bg-violet-50' },
+  { name: 'violet-100', value: '#ede9fe', className: 'bg-violet-100' },
+  { name: 'violet-200', value: '#ddd6fe', className: 'bg-violet-200' },
+  { name: 'violet-300', value: '#c4b5fd', className: 'bg-violet-300' },
+  { name: 'violet-400', value: '#a78bfa', className: 'bg-violet-400' },
+  { name: 'violet-500', value: '#8b5cf6', className: 'bg-violet-500' },
+  { name: 'violet-600', value: '#7c3aed', className: 'bg-violet-600' },
+  { name: 'violet-700', value: '#6d28d9', className: 'bg-violet-700' },
+  { name: 'violet-800', value: '#5b21b6', className: 'bg-violet-800' },
+  { name: 'violet-900', value: '#4c1d95', className: 'bg-violet-900' },
 ]
 
 const semanticSwatches = [
-  { name: 'primary', className: 'bg-primary', text: 'text-white', note: 'actions, links' },
-  { name: 'success', className: 'bg-success', text: 'text-white', note: 'positive states' },
-  { name: 'warning', className: 'bg-warning', text: 'text-white', note: 'attention' },
-  { name: 'destructive', className: 'bg-destructive', text: 'text-white', note: 'errors, remove' },
-  { name: 'accent', className: 'bg-accent', text: 'text-accent-foreground', note: 'hover fills' },
-  { name: 'muted', className: 'bg-muted', text: 'text-muted-foreground', note: 'disabled, hints' },
+  { name: 'primary', className: 'bg-violet-600', text: 'text-white', note: 'actions, links' },
+  { name: 'success', className: 'bg-emerald-500', text: 'text-white', note: 'positive states' },
+  { name: 'warning', className: 'bg-amber-500', text: 'text-white', note: 'attention' },
+  { name: 'destructive', className: 'bg-red-500', text: 'text-white', note: 'errors, remove' },
+  { name: 'accent', className: 'bg-violet-50', text: 'text-violet-700', note: 'hover fills' },
+  { name: 'muted', className: 'bg-slate-100', text: 'text-slate-500', note: 'disabled, hints' },
 ]
 
 const typeScale = [
@@ -46,8 +46,8 @@ const typeScale = [
   { name: 'Heading', className: 'text-2xl font-bold tracking-tight', sample: 'Marketplace reimagined' },
   { name: 'Title', className: 'text-lg font-semibold', sample: 'Multi-vendor commerce' },
   { name: 'Body', className: 'text-base', sample: 'Independent sellers, one marketplace — built for a student capstone.' },
-  { name: 'Caption', className: 'text-sm text-muted-foreground', sample: 'Used for helper text and metadata.' },
-  { name: 'Overline', className: 'text-xs font-semibold uppercase tracking-wider text-muted-foreground', sample: 'Overline label' },
+  { name: 'Caption', className: 'text-sm text-slate-500', sample: 'Used for helper text and metadata.' },
+  { name: 'Overline', className: 'text-xs font-semibold uppercase tracking-wider text-slate-500', sample: 'Overline label' },
 ]
 
 function SectionHeading({ id, kicker, title, description }) {
@@ -60,7 +60,7 @@ function SectionHeading({ id, kicker, title, description }) {
         <h2 id={id} className="scroll-mt-24 text-3xl font-bold tracking-tight">
           {title}
         </h2>
-        {description && <p className="max-w-2xl text-muted-foreground">{description}</p>}
+        {description && <p className="max-w-2xl text-slate-500">{description}</p>}
       </div>
     </Reveal>
   )
@@ -92,7 +92,7 @@ function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Badge className="gap-1.5 border-transparent bg-primary/10 text-primary">
+            <Badge className="gap-1.5 border-transparent bg-violet-50 text-violet-600">
               <Sparkles className="size-3" /> ShopSphere design system · v1
             </Badge>
           </motion.div>
@@ -104,13 +104,13 @@ function Home() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             Modern, clean, professional.{' '}
-            <span className="bg-gradient-to-r from-primary to-brand-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-violet-400 bg-clip-text text-transparent">
               Built on tokens.
             </span>
           </motion.h1>
 
           <motion.p
-            className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground"
+            className="mx-auto mt-4 max-w-xl text-lg text-slate-500"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -149,25 +149,25 @@ function Home() {
           description="Raw violet primitives drive the brand; semantic tokens (primary, success, warning…) carry meaning so pages never hardcode a hex value."
         />
         <Reveal className="mb-6" delay={0.05}>
-          <p className="mb-3 text-sm font-semibold text-muted-foreground">Brand primitive scale</p>
+          <p className="mb-3 text-sm font-semibold text-slate-500">Brand primitive scale</p>
           <div className="grid grid-cols-5 gap-3 sm:grid-cols-10">
             {brandSwatches.map((swatch) => (
               <div key={swatch.name} className="space-y-1.5">
                 <div className={`h-14 rounded-lg ${swatch.className} shadow-inner`} />
-                <p className="text-center text-[10px] font-medium text-muted-foreground">{swatch.name}</p>
+                <p className="text-center text-[10px] font-medium text-slate-500">{swatch.name}</p>
               </div>
             ))}
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <p className="mb-3 text-sm font-semibold text-muted-foreground">Semantic tokens</p>
+          <p className="mb-3 text-sm font-semibold text-slate-500">Semantic tokens</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {semanticSwatches.map((swatch) => (
-              <div key={swatch.name} className="overflow-hidden rounded-xl border border-border">
+              <div key={swatch.name} className="overflow-hidden rounded-xl border border-slate-200">
                 <div className={`flex h-16 items-end p-2 ${swatch.className} ${swatch.text || ''}`}>
                   <span className="text-xs font-bold">{swatch.name}</span>
                 </div>
-                <p className="px-2 py-1.5 text-xs text-muted-foreground">{swatch.note}</p>
+                <p className="px-2 py-1.5 text-xs text-slate-500">{swatch.note}</p>
               </div>
             ))}
           </div>
@@ -175,7 +175,7 @@ function Home() {
       </section>
 
       {/* ---------------- Typography & spacing ---------------- */}
-      <section className="border-y border-border bg-card/60">
+      <section className="border-y border-slate-200 bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
           <SectionHeading
             kicker="Typography"
@@ -190,8 +190,8 @@ function Home() {
               <CardContent className="space-y-4">
                 {typeScale.map((type) => (
                   <div key={type.name} className="flex flex-col gap-1">
-                    <p className={`${type.className} text-foreground`}>{type.sample}</p>
-                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{type.name}</p>
+                    <p className={`${type.className} text-slate-900`}>{type.sample}</p>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{type.name}</p>
                   </div>
                 ))}
               </CardContent>
@@ -210,15 +210,15 @@ function Home() {
                   { token: 'space-12 · 48px', className: 'w-48' },
                 ].map((item) => (
                   <div key={item.token} className="flex items-center gap-3">
-                    <div className={`h-2 rounded-full bg-primary ${item.className}`} />
-                    <span className="text-xs font-medium text-muted-foreground">{item.token}</span>
+                    <div className={`h-2 rounded-full bg-violet-600 ${item.className}`} />
+                    <span className="text-xs font-medium text-slate-500">{item.token}</span>
                   </div>
                 ))}
-                <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
-                  <div className="rounded-md border border-border bg-background p-2 text-xs">radius-md</div>
-                  <div className="rounded-lg border border-border bg-background p-2 text-xs">radius-lg</div>
-                  <div className="rounded-xl border border-border bg-background p-2 text-xs">radius-xl</div>
-                  <div className="rounded-full border border-border bg-background px-3 py-2 text-xs">radius-full</div>
+                <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 pt-4">
+                  <div className="rounded-md border border-slate-200 bg-slate-50 p-2 text-xs">radius-md</div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs">radius-lg</div>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 text-xs">radius-xl</div>
+                  <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs">radius-full</div>
                 </div>
               </CardContent>
             </Card>
@@ -236,7 +236,7 @@ function Home() {
 
         {/* Buttons */}
         <Reveal className="mb-10">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Buttons</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">Buttons</h3>
           <div className="flex flex-wrap items-center gap-3">
             <Button>Primary</Button>
             <Button variant="secondary">Secondary</Button>
@@ -257,7 +257,7 @@ function Home() {
 
         {/* Badges */}
         <Reveal className="mb-10" delay={0.05}>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Badges</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">Badges</h3>
           <div className="flex flex-wrap items-center gap-2">
             <Badge>Primary</Badge>
             <Badge variant="secondary">Secondary</Badge>
@@ -271,7 +271,7 @@ function Home() {
 
         {/* Forms */}
         <Reveal delay={0.1}>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Form controls</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">Form controls</h3>
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -314,7 +314,7 @@ function Home() {
                 </div>
               </CardContent>
               <CardFooter className="justify-between">
-                <p className="text-xs text-muted-foreground">Design-only preview</p>
+                <p className="text-xs text-slate-500">Design-only preview</p>
                 <Button><CreditCard /> Place order</Button>
               </CardFooter>
             </Card>
@@ -326,8 +326,8 @@ function Home() {
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <Spinner className="text-primary" />
-                  <span className="text-sm text-muted-foreground">Loading…</span>
+                  <Spinner className="text-violet-600" />
+                  <span className="text-sm text-slate-500">Loading…</span>
                   <Button size="sm" loading className="ml-auto">Saving</Button>
                 </div>
 
@@ -338,7 +338,7 @@ function Home() {
                 </div>
 
                 {loading ? (
-                  <div className="flex items-center gap-4 rounded-lg border border-border p-4">
+                  <div className="flex items-center gap-4 rounded-lg border border-slate-200 p-4">
                     <Skeleton className="size-14 shrink-0 rounded-full" />
                     <div className="flex-1 space-y-2">
                       <Skeleton className="h-4 w-2/3" />
@@ -347,13 +347,13 @@ function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-4 rounded-lg border border-border bg-background p-4">
-                    <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <ShoppingBag className="size-6 text-primary" />
+                  <div className="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-violet-50">
+                      <ShoppingBag className="size-6 text-violet-600" />
                     </div>
                     <div>
                       <p className="font-semibold">Wireless Headphones</p>
-                      <p className="text-sm text-muted-foreground">SoundWave · ₹2,999</p>
+                      <p className="text-sm text-slate-500">SoundWave · ₹2,999</p>
                       <Badge variant="success" className="mt-1">In stock</Badge>
                     </div>
                   </div>
@@ -365,7 +365,7 @@ function Home() {
       </section>
 
       {/* ---------------- Overlays ---------------- */}
-      <section id="overlays" className="scroll-mt-24 border-y border-border bg-card/60">
+      <section id="overlays" className="scroll-mt-24 border-y border-slate-200 bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
           <SectionHeading
             kicker="Overlays"

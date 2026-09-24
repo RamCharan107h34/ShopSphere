@@ -1,12 +1,14 @@
 import { Check, MapPin, PackageCheck, Truck } from 'lucide-react'
 import { cn } from '../../lib/utils.js'
 import { deliveryFlowSteps } from '../../lib/status.js'
+import { useAccent } from '../../design/context.js'
 
 const STEP_ICONS = [MapPin, PackageCheck, Truck, Check]
 
-// Simple horizontal shipment timeline: Assigned → Picked up → In transit → Delivered.
+// Simple horizontal shipment timeline: Assigned → Shipped (picked up from seller) → Out for delivery → Delivered.
 // step.state is one of 'done' | 'current' | 'idle' (from deliveryFlowSteps).
 export function ShipmentTimeline({ status, className }) {
+  const accent = useAccent()
   const steps = deliveryFlowSteps(status)
   if (!steps.length) return null
 
@@ -23,24 +25,24 @@ export function ShipmentTimeline({ status, className }) {
                 aria-hidden="true"
                 className={cn(
                   'absolute top-3.5 left-1/2 h-0.5 w-full',
-                  step.state === 'done' ? 'bg-primary' : 'bg-border',
+                  step.state === 'done' ? accent.classes.fill : 'bg-slate-200',
                 )}
               />
             )}
             <span
               className={cn(
-                'relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-card transition-colors',
-                step.state === 'done' && 'border-primary bg-primary text-primary-foreground',
-                step.state === 'current' && 'border-primary text-primary',
-                step.state === 'idle' && 'border-border text-muted-foreground',
+                'relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-white transition-colors',
+                step.state === 'done' && cn('text-white', accent.classes.fill, accent.classes.border),
+                step.state === 'current' && cn('bg-white', accent.classes.border, accent.classes.text),
+                step.state === 'idle' && 'border-slate-200 text-slate-400',
               )}
             >
               {step.state === 'done' ? <Check className="size-3.5" /> : <Icon className="size-3.5" />}
             </span>
             <span
               className={cn(
-                'mt-1.5 text-[11px] font-medium leading-tight sm:text-xs',
-                step.state === 'idle' ? 'text-muted-foreground' : 'text-foreground',
+                'mt-1.5 text-[11px] leading-tight font-medium sm:text-xs',
+                step.state === 'idle' ? 'text-slate-500' : 'text-slate-900',
               )}
             >
               {step.label}

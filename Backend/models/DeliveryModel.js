@@ -53,9 +53,18 @@ export const deliverySchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["assigned", "picked_up", "in_transit", "delivered"],
+            enum: ["assigned", "shipped", "out_for_delivery", "delivered"],
             default: "assigned"
         },
+        // One timestamped entry per transition, so the partner's run is
+        // reconstructable after the fact (who scanned what, and when).
+        statusHistory: [
+            {
+                status: { type: String, required: true },
+                note: { type: String, default: "" },
+                at: { type: Date, default: Date.now }
+            }
+        ],
         items: [deliveryItemSchema],
         pickupAddress: {
             storeName: { type: String, default: "" },

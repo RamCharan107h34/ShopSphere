@@ -9,6 +9,7 @@ export function ProductGrid({
   wishlistMode = false,
   onAddToCart,
   onToggleWishlist,
+  onQuickView,
   emptyTitle = 'No products found',
   emptyText = 'Try a different search or browse another category.',
 }) {
@@ -24,12 +25,12 @@ export function ProductGrid({
 
   if (!products || products.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-        <span className="flex size-12 items-center justify-center rounded-full bg-muted">
-          <PackageSearch className="size-6 text-muted-foreground" />
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+        <span className="flex size-12 items-center justify-center rounded-full bg-slate-100">
+          <PackageSearch className="size-6 text-slate-400" />
         </span>
-        <p className="font-semibold">{emptyTitle}</p>
-        <p className="max-w-sm text-sm text-muted-foreground">{emptyText}</p>
+        <p className="font-semibold text-slate-900">{emptyTitle}</p>
+        <p className="max-w-sm text-sm text-slate-500">{emptyText}</p>
       </div>
     )
   }
@@ -43,6 +44,7 @@ export function ProductGrid({
           wished={wishlistMode || wishedIds.has(product._id)}
           onAddToCart={onAddToCart}
           onToggleWishlist={onToggleWishlist}
+          onQuickView={onQuickView}
         />
       ))}
     </div>

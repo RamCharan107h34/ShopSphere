@@ -1,5 +1,5 @@
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Heart, LogOut, Package, RotateCcw, UserRound } from 'lucide-react'
+import { BellRing, Heart, LogOut, Package, RotateCcw, UserRound } from 'lucide-react'
 import { cn } from '../../lib/utils.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/account/orders', label: 'My orders', icon: Package, end: false },
   { to: '/account/wishlist', label: 'Wishlist', icon: Heart, end: false },
   { to: '/account/returns', label: 'Returns', icon: RotateCcw, end: false },
+  { to: '/account/notifications', label: 'Notifications', icon: BellRing, end: false },
 ]
 
 function Avatar({ name }) {
@@ -18,7 +19,7 @@ function Avatar({ name }) {
     .join('')
     .toUpperCase()
   return (
-    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">
       {initials}
     </span>
   )
@@ -40,17 +41,17 @@ export default function AccountLayout() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <h1 className="text-3xl font-bold tracking-tight">My account</h1>
+      <h1 className="text-3xl font-bold tracking-tight text-slate-900">My account</h1>
 
       <div className="mt-6 grid items-start gap-8 lg:grid-cols-[230px_1fr]">
         {/* Sidebar (desktop) */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 space-y-1 rounded-2xl border border-border bg-card p-3">
-            <div className="mb-2 flex items-center gap-3 border-b border-border px-2 pb-3">
+          <div className="sticky top-24 space-y-1 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="mb-2 flex items-center gap-3 border-b border-slate-200 px-2 pb-3">
               <Avatar name={user.name} />
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{user.name}</p>
-                <p className="truncate text-xs text-muted-foreground capitalize">{user.role}</p>
+                <p className="truncate text-sm font-semibold text-slate-900">{user.name}</p>
+                <p className="truncate text-xs text-slate-500 capitalize">{user.role}</p>
               </div>
             </div>
 
@@ -64,8 +65,8 @@ export default function AccountLayout() {
                     cn(
                       'flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                        ? 'bg-violet-50 text-violet-700'
+                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
                     )
                   }
                 >
@@ -76,7 +77,7 @@ export default function AccountLayout() {
 
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50"
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
             >
               <LogOut className="size-4" /> Sign out
             </button>
@@ -84,7 +85,7 @@ export default function AccountLayout() {
         </aside>
 
         {/* Mobile nav (horizontal scroll) */}
-        <nav className="-mx-4 mb-1 overflow-x-auto border-b border-border px-4 lg:hidden" aria-label="Account sections">
+        <nav className="-mx-4 mb-1 overflow-x-auto border-b border-slate-200 px-4 lg:hidden" aria-label="Account sections">
           <div className="flex min-w-max gap-1 pb-2">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon
@@ -95,7 +96,7 @@ export default function AccountLayout() {
                   className={({ isActive }) =>
                     cn(
                       'flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors',
-                      isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground',
+                      isActive ? 'bg-violet-50 text-violet-700' : 'text-slate-500',
                     )
                   }
                 >
@@ -103,7 +104,7 @@ export default function AccountLayout() {
                 </NavLink>
               )
             })}
-            <button onClick={handleLogout} className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-rose-600">
+            <button onClick={handleLogout} className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-red-600">
               <LogOut className="size-3.5" /> Sign out
             </button>
           </div>

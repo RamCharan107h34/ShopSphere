@@ -10,6 +10,7 @@ const emails = [
     "seller@test.com",
     "customer@test.com",
     "agent_1788582441711@test.com",
+    "delivery@test.com",
 ];
 
 const run = async () => {

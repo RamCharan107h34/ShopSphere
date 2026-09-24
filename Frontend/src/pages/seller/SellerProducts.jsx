@@ -21,7 +21,7 @@ const STATUS_META = {
 function stockLabel(product) {
   if (product.stock === 0) return <Badge variant="danger">Out of stock</Badge>
   if (product.stock <= product.lowStockThreshold) return <Badge variant="warning">Low: {product.stock}</Badge>
-  return <span className="text-sm font-medium text-muted-foreground">{product.stock} in stock</span>
+  return <span className="text-sm font-medium text-slate-500">{product.stock} in stock</span>
 }
 
 export default function SellerProducts() {
@@ -58,10 +58,10 @@ export default function SellerProducts() {
       />
 
       {loading ? (
-        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : products?.length ? (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-          <ul className="divide-y divide-border">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <ul className="divide-y divide-slate-200">
             {products.map((product) => {
               const status = STATUS_META[product.status] || { label: product.status, variant: 'neutral' }
               return (
@@ -69,13 +69,13 @@ export default function SellerProducts() {
                   <Thumb src={product.images?.[0]} alt={product.title} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{product.title}</p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                    <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-slate-500">
                       <span>{product.category?.name || 'Uncategorised'}</span>
-                      <span className="text-border">•</span>
+                      <span className="text-slate-200">•</span>
                       <span>{formatPrice(product.price)}</span>
                       {product.variants?.length > 0 && (
                         <>
-                          <span className="text-border">•</span>
+                          <span className="text-slate-200">•</span>
                           <span>{product.variants.length} variant{product.variants.length > 1 ? 's' : ''}</span>
                         </>
                       )}
@@ -87,7 +87,7 @@ export default function SellerProducts() {
                     <Button variant="outline" size="sm" onClick={() => navigate(`/seller/products/${product._id}/edit`)}>
                       <Pencil /> Edit
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(product)} aria-label={`Delete ${product.title}`}>
+                    <Button variant="ghost" size="sm" className="text-slate-500 hover:text-red-600" onClick={() => setDeleteTarget(product)} aria-label={`Delete ${product.title}`}>
                       <Trash2 />
                     </Button>
                   </div>
@@ -97,10 +97,10 @@ export default function SellerProducts() {
           </ul>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><PackagePlus className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600"><PackagePlus className="size-6" /></span>
           <h2 className="text-base font-semibold">No products yet</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Add your first product and it will appear in the ShopSphere catalog once your store is approved.</p>
+          <p className="max-w-sm text-sm text-slate-500">Add your first product and it will appear in the ShopSphere catalog once your store is approved.</p>
           <Button className="mt-2" onClick={() => navigate('/seller/products/new')}><PackagePlus /> Add your first product</Button>
         </div>
       )}

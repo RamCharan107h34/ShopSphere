@@ -74,19 +74,19 @@ export default function Wishlist() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Wishlist</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-slate-500">
             {products.length === 0 ? 'Nothing saved yet' : `${products.length} saved ${products.length === 1 ? 'item' : 'items'}`}
           </p>
         </div>
       </div>
 
       {products.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/50 px-6 py-16 text-center">
           <span className="flex size-16 items-center justify-center rounded-full bg-rose-50">
             <Heart className="size-8 text-rose-400" />
           </span>
           <h3 className="text-lg font-semibold">Your wishlist is empty</h3>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="max-w-sm text-sm text-slate-500">
             Tap the heart on any product to save it here for later.
           </p>
           <Link to="/products">

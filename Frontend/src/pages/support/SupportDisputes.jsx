@@ -29,14 +29,14 @@ export default function SupportDisputes() {
     <div>
       <PageIntro title="Disputes" subtitle="Order disputes raised by customers — resolve them fairly." />
 
-      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-border bg-card p-1 shadow-card">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
         {STATUS_TABS.map((item) => (
           <button
             key={item.key}
             onClick={() => setStatus(item.key)}
             className={cn(
               'rounded-lg px-4 py-1.5 text-sm font-medium transition-colors',
-              status === item.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+              status === item.key ? 'bg-cyan-600 text-white' : 'text-slate-500 hover:bg-cyan-50',
             )}
           >
             {item.label}
@@ -54,7 +54,7 @@ export default function SupportDisputes() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : tickets?.length ? (
         <div className="space-y-3">
           {tickets.map((ticket) => (
@@ -62,10 +62,10 @@ export default function SupportDisputes() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ClipboardList className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-600"><ClipboardList className="size-6" /></span>
           <h2 className="text-base font-semibold">No disputes here</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Disputes raised by customers will appear here.</p>
+          <p className="max-w-sm text-sm text-slate-500">Disputes raised by customers will appear here.</p>
         </div>
       )}
     </div>

@@ -3,6 +3,9 @@ import exp from "express";
 import { CouponModel } from "../models/CouponModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { validate } from "../middlewares/validate.js";
+import { couponSchema } from "../validators/schemas.js";
+import { recordAudit } from "../utils/audit.js";
 
 export const couponApp = exp.Router();
 
@@ -17,7 +20,7 @@ couponApp.get("/coupons", verifyToken, verifyRole("admin"), async (req, res) => 
 });
 
 // 2. Admin: Create Coupon
-couponApp.post("/coupons", verifyToken, verifyRole("admin"), async (req, res) => {
+couponApp.post("/coupons", verifyToken, verifyRole("admin"), validate({ body: couponSchema }), async (req, res) => {
     const {
         code,
         discountType,
@@ -27,18 +30,6 @@ couponApp.post("/coupons", verifyToken, verifyRole("admin"), async (req, res) =>
         expiryDate,
         usageLimit
     } = req.body;
-
-    if (!code || !discountType || !discountValue || !expiryDate) {
-        return res.status(400).json({
-            message: "code, discountType, discountValue, and expiryDate are required"
-        });
-    }
-
-    if (!["percentage", "fixed"].includes(discountType)) {
-        return res.status(400).json({
-            message: "discountType must be either 'percentage' or 'fixed'"
-        });
-    }
 
     const couponDoc = new CouponModel({
         code: code.trim().toUpperCase(),
@@ -51,6 +42,19 @@ couponApp.post("/coupons", verifyToken, verifyRole("admin"), async (req, res) =>
     });
 
     const savedCoupon = await couponDoc.save();
+
+    await recordAudit({
+        req,
+        action: "coupon.create",
+        targetType: "Coupon",
+        targetId: savedCoupon._id,
+        description: `Created coupon ${savedCoupon.code} (${savedCoupon.discountType} ${savedCoupon.discountValue})`,
+        metadata: {
+            code: savedCoupon.code,
+            discountType: savedCoupon.discountType,
+            discountValue: savedCoupon.discountValue
+        }
+    });
 
     res.status(201).json({
         message: "Coupon created successfully",
@@ -75,6 +79,15 @@ couponApp.put("/coupons/:id", verifyToken, verifyRole("admin"), async (req, res)
         });
     }
 
+    await recordAudit({
+        req,
+        action: "coupon.update",
+        targetType: "Coupon",
+        targetId: updatedCoupon._id,
+        description: `Updated coupon ${updatedCoupon.code}`,
+        metadata: { code: updatedCoupon.code, changes: Object.keys(updateData) }
+    });
+
     res.status(200).json({
         message: "Coupon updated successfully",
         payload: updatedCoupon
@@ -90,6 +103,15 @@ couponApp.delete("/coupons/:id", verifyToken, verifyRole("admin"), async (req, r
             message: "Coupon not found"
         });
     }
+
+    await recordAudit({
+        req,
+        action: "coupon.delete",
+        targetType: "Coupon",
+        targetId: deletedCoupon._id,
+        description: `Deleted coupon ${deletedCoupon.code}`,
+        metadata: { code: deletedCoupon.code }
+    });
 
     res.status(200).json({
         message: "Coupon deleted successfully",

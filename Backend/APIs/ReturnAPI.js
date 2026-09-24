@@ -6,18 +6,17 @@ import { ProductModel } from "../models/ProductModel.js";
 import { StoreModel } from "../models/StoreModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { validate } from "../middlewares/validate.js";
+import { returnRequestSchema } from "../validators/schemas.js";
+import { recordAudit } from "../utils/audit.js";
+import { notify } from "../utils/notify.js";
+import { releaseStock } from "../utils/stock.js";
 
 export const returnApp = exp.Router();
 
 // 1. Customer: Submit a Return Request
-returnApp.post("/request", verifyToken, async (req, res) => {
+returnApp.post("/request", verifyToken, validate({ body: returnRequestSchema }), async (req, res) => {
     const { orderId, subOrderId, productId, quantity = 1, reason, description } = req.body;
-
-    if (!orderId || !subOrderId || !productId || !reason) {
-        return res.status(400).json({
-            message: "orderId, subOrderId, productId, and reason are required"
-        });
-    }
 
     const order = await OrderModel.findById(orderId);
     if (!order) {
@@ -85,6 +84,15 @@ returnApp.post("/request", verifyToken, async (req, res) => {
     subOrder.status = "return_requested";
     await order.save();
 
+    await notify({
+        recipientId: subOrder.sellerId,
+        type: "order",
+        title: "New return request",
+        message: `A customer requested a return on order ${order.orderNumber}. Reason: ${reason}.`,
+        link: "/seller/returns",
+        entityId: savedReturn._id
+    });
+
     res.status(201).json({
         message: "Return request submitted successfully",
         payload: savedReturn
@@ -151,16 +159,18 @@ returnApp.put("/seller/returns/:returnId/status", verifyToken, verifyRole("selle
         }
     }
 
-    // If status is completed (item received back and refund processed), restock the inventory!
+    // Loaded once and reused by both the restock branch and the audit trail, so
+    // the recorded description always names the real order number.
+    const order = await OrderModel.findById(returnDoc.orderId);
+
+    // If status is completed (item received back and refund processed), restock the inventory.
+    // Atomic increment rather than read-modify-write: a return can land while a
+    // checkout is decrementing the same SKU, and a lost update there means stock
+    // that never comes back.
     if (status === "completed" && returnDoc.status !== "completed") {
-        const product = await ProductModel.findById(returnDoc.productId);
-        if (product) {
-            product.stock += returnDoc.quantity;
-            await product.save();
-        }
+        await releaseStock(returnDoc.productId, returnDoc.variantId, returnDoc.quantity);
 
         // Update sub-order status to returned
-        const order = await OrderModel.findById(returnDoc.orderId);
         if (order) {
             const subOrder = order.vendorOrders.id(returnDoc.subOrderId);
             if (subOrder) {
@@ -173,6 +183,31 @@ returnApp.put("/seller/returns/:returnId/status", verifyToken, verifyRole("selle
     returnDoc.status = status;
     if (adminNote) returnDoc.adminNote = adminNote;
     await returnDoc.save();
+
+    await recordAudit({
+        req,
+        action: `return.${status}`,
+        targetType: "Return",
+        targetId: returnDoc._id,
+        description: `Return for order ${order?.orderNumber || returnDoc.orderId} marked '${status}' with a refund of ${returnDoc.refundAmount}`,
+        metadata: {
+            orderId: String(returnDoc.orderId),
+            refundAmount: returnDoc.refundAmount,
+            quantity: returnDoc.quantity
+        }
+    });
+
+    await notify({
+        recipientId: returnDoc.customerId,
+        type: "order",
+        title: `Return ${status}`,
+        message:
+            status === "completed"
+                ? `Your return was completed and ${returnDoc.refundAmount} has been refunded.`
+                : `Your return request was ${status}.`,
+        link: "/account/returns",
+        entityId: returnDoc._id
+    });
 
     res.status(200).json({
         message: `Return request marked as '${status}'`,

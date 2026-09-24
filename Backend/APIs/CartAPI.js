@@ -3,6 +3,8 @@ import exp from "express";
 import { CartModel } from "../models/CartModel.js";
 import { ProductModel } from "../models/ProductModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
+import { validate } from "../middlewares/validate.js";
+import { cartItemSchema, cartQuantitySchema } from "../validators/schemas.js";
 
 export const cartApp = exp.Router();
 
@@ -29,14 +31,8 @@ cartApp.get("/cart", verifyToken, async (req, res) => {
 });
 
 // 2. Add Item to Cart
-cartApp.post("/cart", verifyToken, async (req, res) => {
+cartApp.post("/cart", verifyToken, validate({ body: cartItemSchema }), async (req, res) => {
     const { productId, variantId, quantity = 1 } = req.body;
-
-    if (!productId) {
-        return res.status(400).json({
-            message: "Product ID is required"
-        });
-    }
 
     const qtyToAdd = Math.max(1, parseInt(quantity, 10));
 
@@ -124,7 +120,7 @@ cartApp.post("/cart", verifyToken, async (req, res) => {
 });
 
 // 3. Update Cart Item Quantity
-cartApp.put("/cart/:itemId", verifyToken, async (req, res) => {
+cartApp.put("/cart/:itemId", verifyToken, validate({ body: cartQuantitySchema }), async (req, res) => {
     const { quantity } = req.body;
     const qty = parseInt(quantity, 10);
 

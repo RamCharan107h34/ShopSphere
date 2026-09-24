@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
 import { Check, X } from 'lucide-react'
 import { cn } from '../../lib/utils.js'
+import { useAccent } from '../../design/context.js'
 
 // Vertical status stepper.
 // steps: [{ key, label, state: 'done'|'current'|'idle', hint? }]
 // A `current` step with `danger: true` renders as a rejected/X node.
 export function FlowSteps({ steps, className }) {
+  const accent = useAccent()
+
   return (
     <ol className={cn('space-y-0', className)}>
       {steps.map((step, index) => {
@@ -20,8 +23,8 @@ export function FlowSteps({ steps, className }) {
               <span
                 aria-hidden
                 className={cn(
-                  'absolute left-[11px] top-6 h-[calc(100%-1.25rem)] w-0.5 rounded-full',
-                  done ? 'bg-success/50' : 'bg-border',
+                  'absolute top-6 left-[11px] h-[calc(100%-1.25rem)] w-0.5 rounded-full',
+                  done ? 'bg-emerald-300' : 'bg-slate-200',
                 )}
               />
             )}
@@ -33,10 +36,10 @@ export function FlowSteps({ steps, className }) {
               transition={{ delay: index * 0.04 }}
               className={cn(
                 'relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full border',
-                done && 'border-success bg-success text-white',
-                current && !danger && 'border-primary bg-primary/10 text-primary',
-                current && danger && 'border-danger-300 bg-danger-50 text-danger-600',
-                !done && !current && 'border-border bg-card text-muted-foreground/40',
+                done && 'border-emerald-500 bg-emerald-500 text-white',
+                current && !danger && cn(accent.classes.border, accent.classes.chip),
+                current && danger && 'border-red-300 bg-red-50 text-red-600',
+                !done && !current && 'border-slate-200 bg-white text-slate-300',
               )}
             >
               {done ? (
@@ -55,14 +58,15 @@ export function FlowSteps({ steps, className }) {
               <p
                 className={cn(
                   'text-sm leading-tight',
-                  done && 'font-medium text-foreground',
-                  current && 'font-semibold text-primary',
-                  !done && !current && 'text-muted-foreground',
+                  done && 'font-medium text-slate-900',
+                  current && !danger && cn('font-semibold', accent.classes.textStrong),
+                  current && danger && 'font-semibold text-red-600',
+                  !done && !current && 'text-slate-500',
                 )}
               >
                 {step.label}
               </p>
-              {step.hint && <p className="mt-0.5 text-xs text-muted-foreground">{step.hint}</p>}
+              {step.hint && <p className="mt-0.5 text-xs text-slate-500">{step.hint}</p>}
             </div>
           </li>
         )

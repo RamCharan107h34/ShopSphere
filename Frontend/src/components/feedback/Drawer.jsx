@@ -43,7 +43,7 @@ export function Drawer({ open, onClose, title, children, side = 'left', classNam
             aria-modal="true"
             aria-label={title}
             className={cn(
-              'absolute flex flex-col rounded-r-2xl bg-card shadow-elevated',
+              'absolute flex flex-col rounded-r-2xl bg-white shadow-lg',
               sideClasses,
               className,
             )}
@@ -52,12 +52,12 @@ export function Drawer({ open, onClose, title, children, side = 'left', classNam
             exit={{ x: side === 'left' ? '-100%' : '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
           >
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <h2 className="font-semibold">{title}</h2>
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+              <h2 className="font-semibold text-slate-900">{title}</h2>
               <button
                 onClick={onClose}
                 aria-label="Close drawer"
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
               >
                 <X className="size-4" />
               </button>

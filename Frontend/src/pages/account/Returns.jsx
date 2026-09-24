@@ -70,7 +70,7 @@ export default function Returns() {
     <div className="space-y-5">
       <div>
         <h2 className="text-xl font-bold tracking-tight">Returns</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-slate-500">
           {returns.length === 0 ? 'No return requests yet' : `${returns.length} ${returns.length === 1 ? 'request' : 'requests'}`}
         </p>
       </div>
@@ -87,12 +87,12 @@ export default function Returns() {
       )}
 
       {returns.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-          <span className="flex size-16 items-center justify-center rounded-full bg-muted">
-            <RotateCcw className="size-8 text-muted-foreground" />
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/50 px-6 py-16 text-center">
+          <span className="flex size-16 items-center justify-center rounded-full bg-slate-100">
+            <RotateCcw className="size-8 text-slate-500" />
           </span>
           <h3 className="text-lg font-semibold">No return requests</h3>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="max-w-sm text-sm text-slate-500">
             Delivered items can be returned within the return window. Find the order and tap "Return" on an item.
           </p>
           <Link to="/account/orders">
@@ -114,14 +114,14 @@ export default function Returns() {
               transition={{ delay: index * 0.05 }}
             >
               <Card className="overflow-hidden">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-5 py-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-3.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex size-8 items-center justify-center rounded-lg bg-warning/15">
-                      <RotateCcw className="size-4 text-warning-700" />
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-amber-100">
+                      <RotateCcw className="size-4 text-amber-700" />
                     </span>
                     <div>
                       <p className="text-sm font-semibold">Return request</p>
-                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <p className="flex items-center gap-1.5 text-xs text-slate-500">
                         <CalendarDays className="size-3" /> {formatDate(item.createdAt)}
                       </p>
                     </div>
@@ -140,21 +140,21 @@ export default function Returns() {
                           onError={(event) => {
                             event.currentTarget.style.display = 'none'
                           }}
-                          className="size-14 rounded-lg object-cover ring-1 ring-border"
+                          className="size-14 rounded-lg object-cover ring-1 ring-slate-200"
                         />
                       ) : (
-                        <span className="flex size-14 items-center justify-center rounded-lg bg-muted">
-                          <PackageOpen className="size-5 text-muted-foreground/60" />
+                        <span className="flex size-14 items-center justify-center rounded-lg bg-slate-100">
+                          <PackageOpen className="size-5 text-slate-400" />
                         </span>
                       )}
                       <div className="min-w-0">
                         <Link
                           to={`/product/${product._id}`}
-                          className="line-clamp-1 text-sm font-semibold hover:text-primary"
+                          className="line-clamp-1 text-sm font-semibold hover:text-violet-600"
                         >
                           {product.title || 'Product'}
                         </Link>
-                        <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                        <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
                           <Store className="size-3" /> {store.storeName || 'ShopSphere seller'}
                         </p>
                       </div>
@@ -169,14 +169,14 @@ export default function Returns() {
                     </div>
 
                     {item.description && (
-                      <p className="mt-3 rounded-xl bg-muted/50 px-3.5 py-2.5 text-sm text-muted-foreground">
+                      <p className="mt-3 rounded-xl bg-slate-50 px-3.5 py-2.5 text-sm text-slate-500">
                         “{item.description}”
                       </p>
                     )}
 
                     {item.adminNote && (
-                      <p className="mt-3 flex items-start gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3.5 py-2.5 text-sm text-muted-foreground">
-                        <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+                      <p className="mt-3 flex items-start gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2.5 text-sm text-slate-500">
+                        <Info className="mt-0.5 size-4 shrink-0 text-violet-600" />
                         Seller note: {item.adminNote}
                       </p>
                     )}
@@ -184,7 +184,7 @@ export default function Returns() {
                     <div className="mt-4">
                       <Link
                         to={`/account/orders/${item.orderId}`}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                        className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:underline"
                       >
                         View related order <ArrowRight className="size-3.5" />
                       </Link>
@@ -192,14 +192,14 @@ export default function Returns() {
                   </div>
 
                   {/* Status flow */}
-                  <div className="rounded-xl border border-border bg-card/60 p-4">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="rounded-xl border border-slate-200 bg-white/60 p-4">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
                       {item.status === 'rejected' ? 'Decision' : 'Return progress'}
                     </p>
                     {steps.length > 0 ? (
                       <FlowSteps steps={steps} />
                     ) : (
-                      <p className="text-sm text-muted-foreground">Status: {item.status}</p>
+                      <p className="text-sm text-slate-500">Status: {item.status}</p>
                     )}
                   </div>
                 </div>

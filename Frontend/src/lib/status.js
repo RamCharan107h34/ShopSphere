@@ -1,6 +1,8 @@
 // Shared presentation metadata + step builders for order and return statuses.
 
-export const VENDOR_FLOW = ['placed', 'confirmed', 'packed', 'shipped', 'delivered']
+// Full customer-visible journey. Sellers advance placed → confirmed → packed;
+// the delivery partner then marks shipped → out for delivery → delivered.
+export const VENDOR_FLOW = ['placed', 'confirmed', 'packed', 'shipped', 'out_for_delivery', 'delivered']
 
 // Overall order badge (OrderModel.overallStatus)
 export const ORDER_META = {
@@ -17,6 +19,7 @@ export const SUBORDER_META = {
   confirmed: { label: 'Confirmed', variant: 'default' },
   packed: { label: 'Packed', variant: 'secondary' },
   shipped: { label: 'Shipped', variant: 'default' },
+  out_for_delivery: { label: 'Out for delivery', variant: 'warning' },
   delivered: { label: 'Delivered', variant: 'success' },
   cancelled: { label: 'Cancelled', variant: 'danger' },
   return_requested: { label: 'Return requested', variant: 'warning' },
@@ -99,17 +102,18 @@ export const returnFlowSteps = (status) => {
   }))
 }
 
-// Shipment status badge (DeliveryModel.status)
+// Shipment status badge (DeliveryModel.status). The delivery partner picks the
+// package up from the seller (→ Shipped), takes it out for delivery, then delivers.
 export const DELIVERY_META = {
   assigned: { label: 'Assigned', variant: 'neutral' },
-  picked_up: { label: 'Picked up', variant: 'default' },
-  in_transit: { label: 'In transit', variant: 'warning' },
+  shipped: { label: 'Shipped', variant: 'default' },
+  out_for_delivery: { label: 'Out for delivery', variant: 'warning' },
   delivered: { label: 'Delivered', variant: 'success' },
 }
 
 // Steps for a delivery partner's shipment lifecycle.
 export const deliveryFlowSteps = (status) => {
-  const sequence = ['assigned', 'picked_up', 'in_transit', 'delivered']
+  const sequence = ['assigned', 'shipped', 'out_for_delivery', 'delivered']
   const index = sequence.indexOf(status)
   if (index < 0) return []
   return sequence.map((key, i) => ({
@@ -121,7 +125,7 @@ export const deliveryFlowSteps = (status) => {
 
 // The next status a delivery partner can advance a shipment to, or null
 export const nextDeliveryStatus = (status) => {
-  const next = { assigned: 'picked_up', picked_up: 'in_transit', in_transit: 'delivered' }
+  const next = { assigned: 'shipped', shipped: 'out_for_delivery', out_for_delivery: 'delivered' }
   return next[status] || null
 }
 

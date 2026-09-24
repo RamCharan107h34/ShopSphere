@@ -36,12 +36,12 @@ const validateAddress = (form) => {
 function SectionHeading({ step, title, subtitle }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
         {step}
       </span>
       <div>
         <h2 className="font-semibold">{title}</h2>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
       </div>
     </div>
   )
@@ -149,11 +149,11 @@ export default function Checkout() {
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-        <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-          <Lock className="size-7 text-primary" />
+        <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-violet-50">
+          <Lock className="size-7 text-violet-600" />
         </span>
         <h1 className="mt-5 text-2xl font-bold tracking-tight">Sign in to check out</h1>
-        <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+        <p className="mx-auto mt-2 max-w-md text-slate-500">
           You need an account to place an order. Sign in or create one in a moment.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -173,9 +173,9 @@ export default function Checkout() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
         <h1 className="text-2xl font-bold tracking-tight">Checkout</h1>
-        <div className="mt-8 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16">
+        <div className="mt-8 rounded-2xl border border-dashed border-slate-200 bg-white/50 px-6 py-16">
           <p className="font-semibold">Your cart is empty</p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+          <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
             Add something to your cart before checking out.
           </p>
           <Link to="/products" className="mt-6 inline-block">
@@ -187,17 +187,17 @@ export default function Checkout() {
   }
 
   const fieldClass = (name) =>
-    cn(errors[name] && 'border-danger-400 focus-visible:ring-danger-300')
+    cn(errors[name] && 'border-red-400 focus-visible:ring-red-300')
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {/* Heading */}
       <div>
-        <p className="text-sm text-muted-foreground">
-          <Link to="/cart" className="transition-colors hover:text-primary">
+        <p className="text-sm text-slate-500">
+          <Link to="/cart" className="transition-colors hover:text-violet-600">
             Cart
           </Link>{' '}
-          / <span className="text-foreground">Checkout</span>
+          / <span className="text-slate-900">Checkout</span>
         </p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">Checkout</h1>
       </div>
@@ -222,7 +222,7 @@ export default function Checkout() {
                   className={cn('mt-1.5', fieldClass('street'))}
                 />
                 {errors.street && (
-                  <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.street}</p>
+                  <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.street}</p>
                 )}
               </div>
               <div>
@@ -238,7 +238,7 @@ export default function Checkout() {
                   className={cn('mt-1.5', fieldClass('city'))}
                 />
                 {errors.city && (
-                  <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.city}</p>
+                  <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.city}</p>
                 )}
               </div>
               <div>
@@ -254,7 +254,7 @@ export default function Checkout() {
                   className={cn('mt-1.5', fieldClass('state'))}
                 />
                 {errors.state && (
-                  <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.state}</p>
+                  <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.state}</p>
                 )}
               </div>
               <div>
@@ -271,7 +271,7 @@ export default function Checkout() {
                   className={cn('mt-1.5', fieldClass('pincode'))}
                 />
                 {errors.pincode && (
-                  <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.pincode}</p>
+                  <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.pincode}</p>
                 )}
               </div>
               <div>
@@ -289,7 +289,7 @@ export default function Checkout() {
                   className={cn('mt-1.5', fieldClass('phone'))}
                 />
                 {errors.phone && (
-                  <p role="alert" className="mt-1 text-xs font-medium text-danger-600">{errors.phone}</p>
+                  <p role="alert" className="mt-1 text-xs font-medium text-red-600">{errors.phone}</p>
                 )}
               </div>
             </div>
@@ -308,8 +308,8 @@ export default function Checkout() {
                     className={cn(
                       'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all',
                       selected
-                        ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-                        : 'border-border hover:border-primary/40 hover:bg-accent/50',
+                        ? 'border-violet-500 bg-violet-50 ring-2 ring-violet-200'
+                        : 'border-slate-200 hover:border-violet-200 hover:bg-violet-50/50',
                     )}
                   >
                     <input
@@ -323,22 +323,22 @@ export default function Checkout() {
                     <span
                       className={cn(
                         'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg',
-                        selected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+                        selected ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500',
                       )}
                     >
                       <Icon className="size-4.5" />
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold">{method.label}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">{method.hint}</span>
+                      <span className="mt-0.5 block text-xs text-slate-500">{method.hint}</span>
                     </span>
                   </label>
                 )
               })}
             </div>
             {paymentMethod !== 'COD' && (
-              <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-success-700" />
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
+                <ShieldCheck className="size-3.5 text-emerald-700" />
                 This is a demo: the order will be recorded as paid without a real gateway.
               </p>
             )}
@@ -353,7 +353,7 @@ export default function Checkout() {
                 <Skeleton className="h-16 rounded-lg" />
               </div>
             ) : (
-              <ul className="mt-4 divide-y divide-border">
+              <ul className="mt-4 divide-y divide-slate-200">
                 {items.map((item) => {
                   const product = item.productId || {}
                   const store = item.storeId || {}
@@ -368,18 +368,18 @@ export default function Checkout() {
                             onError={(event) => {
                               event.currentTarget.style.display = 'none'
                             }}
-                            className="size-14 rounded-lg object-cover ring-1 ring-border"
+                            className="size-14 rounded-lg object-cover ring-1 ring-slate-200"
                           />
                         ) : (
-                          <div className="size-14 rounded-lg bg-muted" />
+                          <div className="size-14 rounded-lg bg-slate-100" />
                         )}
-                        <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                        <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white">
                           {item.quantity}
                         </span>
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">{product.title}</p>
-                        <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                        <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
                           {store.storeName && (
                             <>
                               <Store className="size-3" /> {store.storeName} ·
@@ -414,7 +414,7 @@ export default function Checkout() {
             <Button type="submit" size="lg" className="w-full" loading={placing} disabled={loading || items.length === 0}>
               {placing ? 'Placing your order…' : `Place order · ${formatPrice(Math.max(0, subtotal - (applied?.discount || 0)))}`}
             </Button>
-            <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+            <p className="flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
               <Lock className="size-3" /> By placing this order you agree to the marketplace terms.
             </p>
           </OrderSummary>
@@ -422,7 +422,7 @@ export default function Checkout() {
           {/* Coupon (revalidated against the final amount) */}
           <Card className="p-5">
             <h2 className="flex items-center gap-2 text-sm font-semibold">
-              <Lock className="size-4 text-primary" /> Coupon
+              <Lock className="size-4 text-violet-600" /> Coupon
             </h2>
             <div className="mt-3">
               <CouponBox
@@ -436,7 +436,7 @@ export default function Checkout() {
 
           <Link
             to="/cart"
-            className="flex items-center justify-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            className="flex items-center justify-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-violet-600"
           >
             <ArrowLeft className="size-4" /> Back to cart
           </Link>

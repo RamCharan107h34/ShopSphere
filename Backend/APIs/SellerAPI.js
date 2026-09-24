@@ -7,8 +7,21 @@ import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
 import { upload } from "../config/upload.js";
 import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
+import { recordAudit } from "../utils/audit.js";
+import { notify, notifyMany } from "../utils/notify.js";
 
 export const sellerApp = exp.Router();
+
+// Only these payout keys may be written by a seller — anything else in the body
+// is ignored rather than persisted verbatim.
+const pickPayoutDetails = (input = {}) => {
+    const allowed = ["accountHolder", "bankName", "accountNumberLast4", "ifsc", "upiId"];
+    const picked = {};
+    for (const key of allowed) {
+        if (input[key] !== undefined) picked[key] = String(input[key]).trim();
+    }
+    return picked;
+};
 
 // 1. Submit Seller & Store Application (Authenticated Customer)
 sellerApp.post("/apply", verifyToken, async (req, res) => {
@@ -71,6 +84,19 @@ sellerApp.post("/apply", verifyToken, async (req, res) => {
 
     await sellerDoc.save();
 
+    // Let every admin know there is something in the approval queue.
+    const admins = await UserModel.find({ role: "admin" }).select("_id");
+    await notifyMany(
+        admins.map((admin) => admin._id),
+        {
+            type: "seller",
+            title: "New seller application",
+            message: `${savedStore.storeName} is awaiting review.`,
+            link: "/admin/sellers",
+            entityId: savedStore._id
+        }
+    );
+
     res.status(201).json({
         message: "Seller application submitted successfully. Awaiting platform admin approval.",
         payload: savedStore
@@ -80,7 +106,7 @@ sellerApp.post("/apply", verifyToken, async (req, res) => {
 // 2. Get All Approved Stores (Public)
 sellerApp.get("/stores", async (req, res) => {
     const stores = await StoreModel.find({ status: "approved" })
-        .select("-commissionRate")
+        .select("-commissionRate -payoutDetails")
         .populate("sellerId", "name email");
 
     res.status(200).json({
@@ -92,7 +118,7 @@ sellerApp.get("/stores", async (req, res) => {
 // 3. Get Store By ID (Public)
 sellerApp.get("/stores/:id", async (req, res) => {
     const store = await StoreModel.findById(req.params.id)
-        .select("-commissionRate")
+        .select("-commissionRate -payoutDetails")
         .populate("sellerId", "name email");
 
     if (!store) {
@@ -129,7 +155,7 @@ sellerApp.get("/my-store", verifyToken, verifyRole("seller", "admin"), async (re
 
 // 5. Update Current Seller's Store Profile (Seller only)
 sellerApp.put("/my-store", verifyToken, verifyRole("seller"), async (req, res) => {
-    const { storeName, description, logo, banner, contactEmail, contactPhone, address } = req.body;
+    const { storeName, description, logo, banner, contactEmail, contactPhone, address, payoutDetails } = req.body;
 
     const updatedStore = await StoreModel.findOneAndUpdate(
         { sellerId: req.user.id },
@@ -141,7 +167,8 @@ sellerApp.put("/my-store", verifyToken, verifyRole("seller"), async (req, res) =
                 ...(banner && { banner }),
                 ...(contactEmail && { contactEmail }),
                 ...(contactPhone !== undefined && { contactPhone }),
-                ...(address && { address })
+                ...(address && { address }),
+                ...(payoutDetails && { payoutDetails: pickPayoutDetails(payoutDetails) })
             }
         },
         { returnDocument: "after" }
@@ -218,6 +245,34 @@ sellerApp.put("/admin/moderate/:storeId", verifyToken, verifyRole("admin"), asyn
     if (status === "approved") {
         await UserModel.findByIdAndUpdate(store.sellerId, { role: "seller" });
     }
+
+    await recordAudit({
+        req,
+        action: `seller.${status}`,
+        targetType: "Store",
+        targetId: store._id,
+        description: `${store.storeName} ${status} by admin`,
+        metadata: {
+            storeName: store.storeName,
+            status,
+            rejectionReason: store.rejectionReason || "",
+            commissionRate: store.commissionRate
+        }
+    });
+
+    await notify({
+        recipientId: store.sellerId,
+        type: "seller",
+        title: `Store application ${status}`,
+        message:
+            status === "approved"
+                ? "Your store is live. You can start listing products."
+                : status === "rejected"
+                  ? `Reason: ${store.rejectionReason || "Not specified"}`
+                  : "Your application has been moved back to pending review.",
+        link: "/seller/store",
+        entityId: store._id
+    });
 
     res.status(200).json({
         message: `Seller application has been ${status}`,

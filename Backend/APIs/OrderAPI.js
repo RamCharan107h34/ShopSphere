@@ -7,18 +7,17 @@ import { StoreModel } from "../models/StoreModel.js";
 import { CouponModel } from "../models/CouponModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { validate } from "../middlewares/validate.js";
+import { reserveStock, releaseOrderItems } from "../utils/stock.js";
+import { notify, notifyMany } from "../utils/notify.js";
+import { recordAudit } from "../utils/audit.js";
+import { checkoutSchema } from "../validators/schemas.js";
 
 export const orderApp = exp.Router();
 
-// 1. Checkout: Place Order with Multi-Vendor Splitting & Stock Decrement
-orderApp.post("/checkout", verifyToken, async (req, res) => {
+// 1. Checkout: Place Order with Multi-Vendor Splitting & Atomic Stock Decrement
+orderApp.post("/checkout", verifyToken, validate({ body: checkoutSchema }), async (req, res) => {
     const { shippingAddress, paymentMethod = "COD", couponCode } = req.body;
-
-    if (!shippingAddress || !shippingAddress.street || !shippingAddress.city || !shippingAddress.pincode || !shippingAddress.phone) {
-        return res.status(400).json({
-            message: "Full shipping address (street, city, pincode, phone) is required"
-        });
-    }
 
     // Get user's cart
     const cart = await CartModel.findOne({ userId: req.user.id }).populate("items.productId");
@@ -29,41 +28,34 @@ orderApp.post("/checkout", verifyToken, async (req, res) => {
         });
     }
 
-    // Step A: Validate stock for all cart items first
-    for (const item of cart.items) {
-        const product = await ProductModel.findById(item.productId);
-        if (!product || product.status !== "active") {
-            return res.status(400).json({
-                message: `Product '${product ? product.title : "Unknown"}' is no longer available`
-            });
-        }
-
-        let availableStock = product.stock;
-        if (item.variantId) {
-            const variant = product.variants.id(item.variantId);
-            if (variant) availableStock = variant.stock;
-        }
-
-        if (availableStock < item.quantity) {
-            return res.status(400).json({
-                message: `Insufficient stock for '${product.title}'. Only ${availableStock} available.`
-            });
-        }
-    }
-
-    // Step B: Deduct stock & Group items by vendor store (Multi-vendor splitting)
+    // Step A: Reserve stock atomically and group items by vendor store.
+    //
+    // Each reservation is one conditional update, so two customers racing for
+    // the last unit can no longer both succeed (the old read-then-save could).
+    // If any line fails we release everything already taken and abort, leaving
+    // the cart untouched for the customer to fix.
     const vendorMap = new Map();
+    const reserved = [];
 
     for (const item of cart.items) {
-        const product = await ProductModel.findById(item.productId);
+        const product = await reserveStock(item.productId, item.variantId, item.quantity);
 
-        // Deduct stock
-        if (item.variantId) {
-            const variant = product.variants.id(item.variantId);
-            if (variant) variant.stock -= item.quantity;
+        if (!product) {
+            await releaseOrderItems(reserved);
+
+            const stale = await ProductModel.findById(item.productId).select("title status");
+            return res.status(409).json({
+                message: stale
+                    ? `Insufficient stock for '${stale.title}'. Please adjust your cart and try again.`
+                    : "One of the items in your cart is no longer available"
+            });
         }
-        product.stock -= item.quantity;
-        await product.save();
+
+        reserved.push({
+            productId: product._id,
+            variantId: item.variantId || null,
+            quantity: item.quantity
+        });
 
         // Group by store
         const storeKey = item.storeId.toString();
@@ -149,6 +141,28 @@ orderApp.post("/checkout", verifyToken, async (req, res) => {
     cart.totalItems = 0;
     await cart.save();
 
+    // Tell the buyer their order landed, and tell every affected seller that
+    // they have something to fulfil.
+    await notify({
+        recipientId: req.user.id,
+        type: "order",
+        title: `Order ${orderNumber} placed`,
+        message: `${savedOrder.vendorOrders.length} shipment(s) confirmed - total ${totalAmount.toFixed(2)}.`,
+        link: `/account/orders/${savedOrder._id}`,
+        entityId: savedOrder._id
+    });
+
+    await notifyMany(
+        savedOrder.vendorOrders.map((vo) => vo.sellerId),
+        {
+            type: "order",
+            title: `New order ${orderNumber}`,
+            message: "A customer placed an order containing your products.",
+            link: "/seller/orders",
+            entityId: savedOrder._id
+        }
+    );
+
     res.status(201).json({
         message: "Order placed successfully",
         payload: savedOrder
@@ -207,34 +221,36 @@ orderApp.put("/customer/orders/:id/cancel", verifyToken, async (req, res) => {
         });
     }
 
-    // Guard: Cannot cancel if any vendor sub-order is already shipped or delivered
-    const hasShipped = order.vendorOrders.some(vo => ["shipped", "delivered"].includes(vo.status));
+    // Guard: Cannot cancel if any vendor sub-order is already with the delivery partner or delivered
+    const hasShipped = order.vendorOrders.some(vo => ["shipped", "out_for_delivery", "delivered"].includes(vo.status));
     if (hasShipped) {
         return res.status(400).json({
             message: "Cannot cancel order. One or more shipments are already in transit or delivered."
         });
     }
 
-    // Restock all items
+    // Restock every item with atomic increments, so a simultaneous checkout
+    // cannot be lost by a concurrent read-then-save.
     for (const vo of order.vendorOrders) {
         if (vo.status !== "cancelled") {
-            for (const item of vo.items) {
-                const product = await ProductModel.findById(item.productId);
-                if (product) {
-                    if (item.variantId) {
-                        const variant = product.variants.id(item.variantId);
-                        if (variant) variant.stock += item.quantity;
-                    }
-                    product.stock += item.quantity;
-                    await product.save();
-                }
-            }
+            await releaseOrderItems(vo.items);
             vo.status = "cancelled";
         }
     }
 
     order.overallStatus = "cancelled";
     await order.save();
+
+    await notifyMany(
+        order.vendorOrders.map((vo) => vo.sellerId),
+        {
+            type: "order",
+            title: `Order ${order.orderNumber} cancelled`,
+            message: "The customer cancelled this order. Stock has been restored.",
+            link: "/seller/orders",
+            entityId: order._id
+        }
+    );
 
     res.status(200).json({
         message: "Order cancelled successfully and inventory restocked",
@@ -255,6 +271,7 @@ orderApp.get("/seller/orders", verifyToken, verifyRole("seller"), async (req, re
         "vendorOrders.storeId": store._id
     })
         .populate("customerId", "name email phone")
+        .populate("vendorOrders.deliveryPartnerId", "name email phone")
         .sort({ createdAt: -1 });
 
     // Filter to return only this seller's specific sub-orders along with order headers
@@ -282,10 +299,12 @@ orderApp.get("/seller/orders", verifyToken, verifyRole("seller"), async (req, re
 });
 
 // 6. Seller: Update Sub-Order Status (State machine transition)
+// Sellers own fulfilment up to "packed". The delivery leg (shipped →
+// out_for_delivery → delivered) belongs to the delivery partner via /delivery-api.
 orderApp.put("/seller/orders/:orderId/sub-orders/:subOrderId/status", verifyToken, verifyRole("seller", "admin"), async (req, res) => {
     const { status, trackingNumber } = req.body;
 
-    const validStatuses = ["confirmed", "packed", "shipped", "delivered", "cancelled"];
+    const validStatuses = ["confirmed", "packed", "cancelled"];
     if (!validStatuses.includes(status)) {
         return res.status(400).json({
             message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`
@@ -319,8 +338,9 @@ orderApp.put("/seller/orders/:orderId/sub-orders/:subOrderId/status", verifyToke
     const allowedTransitions = {
         placed: ["confirmed", "cancelled"],
         confirmed: ["packed", "cancelled"],
-        packed: ["shipped", "cancelled"],
-        shipped: ["delivered"],
+        packed: ["cancelled"],
+        shipped: [],
+        out_for_delivery: [],
         delivered: ["return_requested"],
         cancelled: []
     };
@@ -331,19 +351,9 @@ orderApp.put("/seller/orders/:orderId/sub-orders/:subOrderId/status", verifyToke
         });
     }
 
-    // If seller cancels sub-order, restock its items
+    // If seller cancels sub-order, restock its items atomically
     if (status === "cancelled" && currentStatus !== "cancelled") {
-        for (const item of subOrder.items) {
-            const product = await ProductModel.findById(item.productId);
-            if (product) {
-                if (item.variantId) {
-                    const variant = product.variants.id(item.variantId);
-                    if (variant) variant.stock += item.quantity;
-                }
-                product.stock += item.quantity;
-                await product.save();
-            }
-        }
+        await releaseOrderItems(subOrder.items);
     }
 
     subOrder.status = status;
@@ -352,7 +362,7 @@ orderApp.put("/seller/orders/:orderId/sub-orders/:subOrderId/status", verifyToke
     // Recalculate master overallStatus
     const allDelivered = order.vendorOrders.every(vo => vo.status === "delivered");
     const allCancelled = order.vendorOrders.every(vo => vo.status === "cancelled");
-    const anyShipped = order.vendorOrders.some(vo => vo.status === "shipped");
+    const anyShipped = order.vendorOrders.some(vo => ["shipped", "out_for_delivery"].includes(vo.status));
 
     if (allDelivered) {
         order.overallStatus = "delivered";
@@ -365,6 +375,32 @@ orderApp.put("/seller/orders/:orderId/sub-orders/:subOrderId/status", verifyToke
     }
 
     await order.save();
+
+    // The transition actor IS the audit trail the PRD asks for: who moved the
+    // sub-order, from what, to what, and when.
+    await recordAudit({
+        req,
+        action: "order.status_change",
+        targetType: "Order",
+        targetId: order._id,
+        description: `Sub-order ${subOrder._id} moved ${currentStatus} -> ${status} on ${order.orderNumber}`,
+        metadata: {
+            orderNumber: order.orderNumber,
+            subOrderId: String(subOrder._id),
+            from: currentStatus,
+            to: status,
+            trackingNumber: subOrder.trackingNumber || ""
+        }
+    });
+
+    await notify({
+        recipientId: order.customerId,
+        type: "order",
+        title: `Order ${order.orderNumber}: ${status}`,
+        message: `One of your shipments is now '${status}'.`,
+        link: `/account/orders/${order._id}`,
+        entityId: order._id
+    });
 
     res.status(200).json({
         message: `Sub-order status updated to '${status}'`,

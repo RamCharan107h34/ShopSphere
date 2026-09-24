@@ -77,13 +77,13 @@ function StoreForm({ store, onSaved }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-card">
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       {/* Banner preview */}
-      <div className="overflow-hidden rounded-xl border border-border">
+      <div className="overflow-hidden rounded-xl border border-slate-200">
         {!isPlaceholderImage(form.banner) ? (
           <img src={form.banner} alt="Store banner" className="h-28 w-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
         ) : (
-          <div className="flex h-28 w-full items-center justify-center bg-gradient-to-br from-primary/20 via-primary/5 to-transparent text-sm text-muted-foreground">
+          <div className="flex h-28 w-full items-center justify-center bg-gradient-to-br from-indigo-200 via-indigo-50 to-transparent text-sm text-slate-500">
             Banner preview
           </div>
         )}
@@ -93,7 +93,7 @@ function StoreForm({ store, onSaved }) {
         <div className="sm:col-span-2">
           <label className="mb-1.5 block text-sm font-medium">Store name *</label>
           <Input value={form.storeName} onChange={set('storeName')} aria-invalid={!!errors.storeName} placeholder="e.g. TechNova Store" />
-          {errors.storeName && <p role="alert" className="mt-1 text-xs text-destructive">{errors.storeName}</p>}
+          {errors.storeName && <p role="alert" className="mt-1 text-xs text-red-600">{errors.storeName}</p>}
         </div>
 
         <div className="sm:col-span-2">
@@ -102,7 +102,7 @@ function StoreForm({ store, onSaved }) {
             value={form.description}
             onChange={set('description')}
             rows={3}
-            className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
             placeholder="What do you sell? Tell customers about your store."
           />
         </div>
@@ -119,7 +119,7 @@ function StoreForm({ store, onSaved }) {
         <div>
           <label className="mb-1.5 block text-sm font-medium">Contact email *</label>
           <Input type="email" value={form.contactEmail} onChange={set('contactEmail')} aria-invalid={!!errors.contactEmail} />
-          {errors.contactEmail && <p role="alert" className="mt-1 text-xs text-destructive">{errors.contactEmail}</p>}
+          {errors.contactEmail && <p role="alert" className="mt-1 text-xs text-red-600">{errors.contactEmail}</p>}
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Contact phone</label>
@@ -139,7 +139,7 @@ function StoreForm({ store, onSaved }) {
         </div>
       </div>
 
-      <div className="flex justify-end border-t border-border pt-4">
+      <div className="flex justify-end border-t border-slate-200 pt-4">
         <Button type="submit" loading={saving}>
           <Save /> Save changes
         </Button>
@@ -160,16 +160,16 @@ export default function SellerStoreProfile() {
       <PageIntro title="Store profile" subtitle="Your public storefront identity — customers see this on product pages." />
 
       {loading || !store ? (
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <StoreForm key={store._id} store={store} onSaved={reload} />
 
           {/* Store snapshot */}
           <aside className="space-y-4">
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span className="flex size-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                   <Building2 className="size-5" />
                 </span>
                 <div className="min-w-0">
@@ -181,27 +181,27 @@ export default function SellerStoreProfile() {
               </div>
               <dl className="mt-4 space-y-2.5 text-sm">
                 <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Commission rate</dt>
+                  <dt className="text-slate-500">Commission rate</dt>
                   <dd className="font-medium">{store.commissionRate}%</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Owner</dt>
+                  <dt className="text-slate-500">Owner</dt>
                   <dd className="truncate font-medium">{seller?.name || '—'}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Owner email</dt>
+                  <dt className="text-slate-500">Owner email</dt>
                   <dd className="truncate font-medium">{seller?.email || '—'}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Joined</dt>
+                  <dt className="text-slate-500">Joined</dt>
                   <dd className="font-medium">{new Date(store.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</dd>
                 </div>
               </dl>
             </div>
             {store.status === 'rejected' && store.rejectionReason && (
-              <div className="rounded-2xl border border-danger/30 bg-danger-50 p-4 text-sm">
-                <p className="font-semibold text-danger-600">Rejection reason</p>
-                <p className="mt-1 text-danger-600/80">{store.rejectionReason}</p>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm">
+                <p className="font-semibold text-red-600">Rejection reason</p>
+                <p className="mt-1 text-red-600/80">{store.rejectionReason}</p>
               </div>
             )}
           </aside>

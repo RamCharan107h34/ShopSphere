@@ -47,7 +47,19 @@ export const storeSchema = new mongoose.Schema(
         },
         commissionRate: {
             type: Number,
-            default: 10 // 10% platform fee default
+            default: 10, // 10% platform fee default
+            min: 0,
+            max: 100
+        },
+        // Where the platform pays this seller. Stored on the store (not the
+        // user) so a seller's payout routing is part of their vendor profile.
+        // Never returned by the public store list endpoints.
+        payoutDetails: {
+            accountHolder: { type: String, default: "", trim: true },
+            bankName: { type: String, default: "", trim: true },
+            accountNumberLast4: { type: String, default: "", trim: true },
+            ifsc: { type: String, default: "", trim: true },
+            upiId: { type: String, default: "", trim: true }
         },
         rejectionReason: {
             type: String,

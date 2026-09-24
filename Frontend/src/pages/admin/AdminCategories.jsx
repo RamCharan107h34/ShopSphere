@@ -87,10 +87,10 @@ export default function AdminCategories() {
       />
 
       {loading ? (
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
       ) : categories?.length ? (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-          <ul className="divide-y divide-border">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <ul className="divide-y divide-slate-200">
             {categories.map((category) => (
               <li key={category._id} className="flex flex-wrap items-center gap-4 px-5 py-3.5">
                 <Thumb src={category.image} alt={category.name} />
@@ -100,11 +100,11 @@ export default function AdminCategories() {
                     {!category.isActive && <Badge variant="neutral">Hidden</Badge>}
                     {category.parentCategory && <Badge variant="secondary">Sub: {category.parentCategory.name}</Badge>}
                   </div>
-                  <p className="truncate text-xs text-muted-foreground">/{category.slug}{category.description ? ` · ${category.description}` : ''}</p>
+                  <p className="truncate text-xs text-slate-500">/{category.slug}{category.description ? ` · ${category.description}` : ''}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Button variant="outline" size="sm" onClick={() => openEdit(category)}><Pencil /> Edit</Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(category)} aria-label={`Delete ${category.name}`}>
+                  <Button variant="ghost" size="sm" className="text-slate-500 hover:text-red-600" onClick={() => setDeleteTarget(category)} aria-label={`Delete ${category.name}`}>
                     <Trash2 />
                   </Button>
                 </div>
@@ -113,10 +113,10 @@ export default function AdminCategories() {
           </ul>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Tags className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Tags className="size-6" /></span>
           <h2 className="text-base font-semibold">No categories yet</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Create the first category so sellers can list products under it.</p>
+          <p className="max-w-sm text-sm text-slate-500">Create the first category so sellers can list products under it.</p>
           <Button className="mt-2" onClick={openCreate}><Plus /> New category</Button>
         </div>
       )}
@@ -138,8 +138,8 @@ export default function AdminCategories() {
           <div>
             <label className="mb-1.5 block text-sm font-medium">Name *</label>
             <Input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="e.g. Electronics" aria-invalid={!!error} />
-            {error && <p role="alert" className="mt-1 text-xs text-destructive">{error}</p>}
-            <p className="mt-1 text-xs text-muted-foreground">Slug is generated automatically (e.g. "home-appliances").</p>
+            {error && <p role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
+            <p className="mt-1 text-xs text-slate-500">Slug is generated automatically (e.g. "home-appliances").</p>
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Description</label>

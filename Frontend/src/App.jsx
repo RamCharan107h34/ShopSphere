@@ -16,6 +16,7 @@ import Wishlist from './pages/account/Wishlist.jsx'
 import Orders from './pages/account/Orders.jsx'
 import OrderDetails from './pages/account/OrderDetails.jsx'
 import Returns from './pages/account/Returns.jsx'
+import Notifications from './pages/account/Notifications.jsx'
 import SellerLayout from './components/seller/SellerLayout.jsx'
 import SellerOverview from './pages/seller/SellerOverview.jsx'
 import SellerStoreProfile from './pages/seller/SellerStoreProfile.jsx'
@@ -26,6 +27,7 @@ import SellerInventory from './pages/seller/SellerInventory.jsx'
 import SellerOrders from './pages/seller/SellerOrders.jsx'
 import SellerReturns from './pages/seller/SellerReturns.jsx'
 import SellerAnalytics from './pages/seller/SellerAnalytics.jsx'
+import SellerEarnings from './pages/seller/SellerEarnings.jsx'
 import AdminLayout from './components/admin/AdminLayout.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import AdminUsers from './pages/admin/AdminUsers.jsx'
@@ -35,6 +37,8 @@ import AdminProducts from './pages/admin/AdminProducts.jsx'
 import AdminCoupons from './pages/admin/AdminCoupons.jsx'
 import AdminDisputes from './pages/admin/AdminDisputes.jsx'
 import AdminReports from './pages/admin/AdminReports.jsx'
+import AdminSettlements from './pages/admin/AdminSettlements.jsx'
+import AdminAuditLogs from './pages/admin/AdminAuditLogs.jsx'
 import SupportLayout from './components/support/SupportLayout.jsx'
 import SupportDashboard from './pages/support/SupportDashboard.jsx'
 import SupportTickets from './pages/support/SupportTickets.jsx'
@@ -76,6 +80,7 @@ function App() {
                   <Route path="orders" element={<Orders />} />
                   <Route path="orders/:orderId" element={<OrderDetails />} />
                   <Route path="returns" element={<Returns />} />
+                  <Route path="notifications" element={<Notifications />} />
                 </Route>
                 <Route path="seller" element={<SellerLayout />}>
                   <Route index element={<SellerOverview />} />
@@ -87,6 +92,7 @@ function App() {
                   <Route path="orders" element={<SellerOrders />} />
                   <Route path="returns" element={<SellerReturns />} />
                   <Route path="analytics" element={<SellerAnalytics />} />
+                  <Route path="earnings" element={<SellerEarnings />} />
                 </Route>
                 <Route path="admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
@@ -97,6 +103,8 @@ function App() {
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="disputes" element={<AdminDisputes />} />
                   <Route path="reports" element={<AdminReports />} />
+                  <Route path="settlements" element={<AdminSettlements />} />
+                  <Route path="audit-logs" element={<AdminAuditLogs />} />
                 </Route>
                 <Route path="support" element={<SupportLayout />}>
                   <Route index element={<SupportDashboard />} />

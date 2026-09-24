@@ -1,15 +1,8 @@
 import { cn } from '../../lib/utils.js'
+import { surfaces, typography } from '../../design/context.js'
 
 export function Card({ className, ...props }) {
-  return (
-    <div
-      className={cn(
-        'rounded-xl border border-border bg-card text-card-foreground shadow-card',
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <div className={cn(surfaces.card, 'text-slate-900', className)} {...props} />
 }
 
 export function CardHeader({ className, ...props }) {
@@ -17,13 +10,11 @@ export function CardHeader({ className, ...props }) {
 }
 
 export function CardTitle({ className, ...props }) {
-  return (
-    <h3 className={cn('text-lg font-semibold leading-none tracking-tight', className)} {...props} />
-  )
+  return <h3 className={cn(typography.h3, className)} {...props} />
 }
 
 export function CardDescription({ className, ...props }) {
-  return <p className={cn('text-sm leading-relaxed text-muted-foreground', className)} {...props} />
+  return <p className={cn('text-sm leading-relaxed text-slate-500', className)} {...props} />
 }
 
 export function CardContent({ className, ...props }) {

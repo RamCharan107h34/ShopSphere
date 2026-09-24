@@ -21,6 +21,10 @@ import { supportApp } from "./APIs/SupportAPI.js";
 import { deliveryApp } from "./APIs/DeliveryAPI.js";
 import { analyticsApp } from "./APIs/AnalyticsAPI.js";
 import { aiApp } from "./APIs/AIAPI.js";
+import { notificationApp } from "./APIs/NotificationAPI.js";
+import { settlementApp } from "./APIs/SettlementAPI.js";
+import { auditApp } from "./APIs/AuditAPI.js";
+import { writeLimiter } from "./middlewares/rateLimit.js";
 
 config();
 
@@ -39,6 +43,11 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(morgan("dev"));
 
+// Baseline write throttle applied to every route. It skips safe reads, so
+// browsing is never affected; use it as a floor, not a substitute for the
+// tighter credential limiters inside the auth router.
+app.use(writeLimiter);
+
 // Routes
 app.use("/user-api", userApp);
 app.use("/seller-api", sellerApp);
@@ -54,6 +63,9 @@ app.use("/support-api", supportApp);
 app.use("/delivery-api", deliveryApp);
 app.use("/analytics-api", analyticsApp);
 app.use("/ai-api", aiApp);
+app.use("/notification-api", notificationApp);
+app.use("/settlement-api", settlementApp);
+app.use("/audit-api", auditApp);
 
 // Basic route
 app.get("/", (req, res) => {

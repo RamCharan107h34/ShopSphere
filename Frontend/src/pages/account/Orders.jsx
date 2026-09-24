@@ -23,7 +23,7 @@ function ItemThumbs({ orders }) {
       {shown.map((item, index) => (
         <span
           key={`${item.productId}-${index}`}
-          className="-ml-2.5 flex size-11 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted ring-2 ring-card first:ml-0"
+          className="-ml-2.5 flex size-11 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 ring-2 ring-white first:ml-0"
         >
           {!isPlaceholderImage(item.image) ? (
             <img
@@ -36,12 +36,12 @@ function ItemThumbs({ orders }) {
               className="size-full object-cover"
             />
           ) : (
-            <PackageOpen className="size-4 text-muted-foreground/60" />
+            <PackageOpen className="size-4 text-slate-400" />
           )}
         </span>
       ))}
       {extra > 0 && (
-        <span className="-ml-2.5 flex size-11 items-center justify-center rounded-lg bg-muted text-xs font-semibold text-muted-foreground ring-2 ring-card">
+        <span className="-ml-2.5 flex size-11 items-center justify-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-500 ring-2 ring-white">
           +{extra}
         </span>
       )}
@@ -110,16 +110,16 @@ export default function Orders() {
     <div className="space-y-5">
       <div>
         <h2 className="text-xl font-bold tracking-tight">My orders</h2>
-        <p className="text-sm text-muted-foreground">{orders.length} {orders.length === 1 ? 'order' : 'orders'}</p>
+        <p className="text-sm text-slate-500">{orders.length} {orders.length === 1 ? 'order' : 'orders'}</p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-          <span className="flex size-16 items-center justify-center rounded-full bg-muted">
-            <ReceiptText className="size-8 text-muted-foreground" />
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/50 px-6 py-16 text-center">
+          <span className="flex size-16 items-center justify-center rounded-full bg-slate-100">
+            <ReceiptText className="size-8 text-slate-500" />
           </span>
           <h3 className="text-lg font-semibold">No orders yet</h3>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="max-w-sm text-sm text-slate-500">
             When you place an order, it will show up here with live status updates.
           </p>
           <Link to="/products">
@@ -140,17 +140,17 @@ export default function Orders() {
               transition={{ delay: orderIndex * 0.05 }}
             >
               <Card className="overflow-hidden">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-5 py-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-3.5">
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
                     <div>
-                      <p className="text-xs text-muted-foreground">Order number</p>
+                      <p className="text-xs text-slate-500">Order number</p>
                       <p className="font-mono text-sm font-semibold">{order.orderNumber}</p>
                     </div>
                     <div className="hidden sm:block">
-                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <p className="flex items-center gap-1.5 text-xs text-slate-500">
                         <CalendarDays className="size-3.5" /> {formatDate(order.createdAt)}
                       </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
+                      <p className="mt-0.5 text-xs text-slate-500">
                         {vendorOrders.length} {vendorOrders.length === 1 ? 'seller' : 'sellers'}
                       </p>
                     </div>
@@ -165,18 +165,18 @@ export default function Orders() {
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                       <p className="text-sm">
                         <span className="font-bold">{itemCount}</span>{' '}
-                        <span className="text-muted-foreground">{itemCount === 1 ? 'item' : 'items'}</span>
+                        <span className="text-slate-500">{itemCount === 1 ? 'item' : 'items'}</span>
                       </p>
                       <p className="text-sm font-bold">{formatPrice(order.totalAmount)}</p>
                       {order.discountAmount > 0 && (
-                        <span className="text-xs text-success-700">−{formatPrice(order.discountAmount)} coupon</span>
+                        <span className="text-xs text-emerald-700">−{formatPrice(order.discountAmount)} coupon</span>
                       )}
-                      <span className="text-xs capitalize text-muted-foreground">{order.paymentMethod.toLowerCase().replace('_', ' ')}</span>
+                      <span className="text-xs capitalize text-slate-500">{order.paymentMethod.toLowerCase().replace('_', ' ')}</span>
                     </div>
                     {storeNames.length > 0 && (
-                      <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                      <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                         {storeNames.map((name) => (
-                          <span key={name} className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5">
+                          <span key={name} className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5">
                             <Store className="size-3" /> {name}
                           </span>
                         ))}
@@ -211,8 +211,8 @@ export default function Orders() {
         description="Cancelling restores the items to stock. Orders that have already shipped can't be cancelled."
       >
         {cancelTarget && (
-          <p className="text-sm text-muted-foreground">
-            You're about to cancel <span className="font-semibold text-foreground">{cancelTarget.orderNumber}</span> (
+          <p className="text-sm text-slate-500">
+            You're about to cancel <span className="font-semibold text-slate-900">{cancelTarget.orderNumber}</span> (
             {formatPrice(cancelTarget.totalAmount)}).
           </p>
         )}

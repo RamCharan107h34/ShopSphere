@@ -20,8 +20,8 @@ function ItemImage({ item, onError }) {
   const image = item.productId?.images?.[0]
   if (isPlaceholderImage(image)) {
     return (
-      <div className="flex size-20 items-center justify-center rounded-lg bg-muted sm:size-24">
-        <ImageOff className="size-6 text-muted-foreground/50" />
+      <div className="flex size-20 items-center justify-center rounded-lg bg-slate-100 sm:size-24">
+        <ImageOff className="size-6 text-slate-400" />
       </div>
     )
   }
@@ -31,19 +31,19 @@ function ItemImage({ item, onError }) {
       alt={item.productId?.title || 'Product'}
       loading="lazy"
       onError={onError}
-      className="size-20 rounded-lg object-cover ring-1 ring-border sm:size-24"
+      className="size-20 rounded-lg object-cover ring-1 ring-slate-200 sm:size-24"
     />
   )
 }
 
 function QuantityStepper({ value, min = 1, max, disabled, onChange, ariaLabel }) {
   return (
-    <div className="inline-flex items-center rounded-lg border border-border bg-card">
+    <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white">
       <button
         onClick={() => onChange(value - 1)}
         disabled={disabled || value <= min}
         aria-label={`Decrease ${ariaLabel}`}
-        className="flex size-8 items-center justify-center rounded-l-lg text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-l-lg text-slate-500 transition-colors hover:text-slate-900 disabled:pointer-events-none disabled:opacity-40"
       >
         <Minus className="size-3.5" />
       </button>
@@ -54,7 +54,7 @@ function QuantityStepper({ value, min = 1, max, disabled, onChange, ariaLabel })
         onClick={() => onChange(value + 1)}
         disabled={disabled || (max != null && value >= max)}
         aria-label={`Increase ${ariaLabel}`}
-        className="flex size-8 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-r-lg text-slate-500 transition-colors hover:text-slate-900 disabled:pointer-events-none disabled:opacity-40"
       >
         <Plus className="size-3.5" />
       </button>
@@ -138,11 +138,11 @@ export default function Cart() {
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-        <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-          <ShoppingCart className="size-8 text-primary" />
+        <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-violet-50">
+          <ShoppingCart className="size-8 text-violet-600" />
         </span>
         <h1 className="mt-5 text-2xl font-bold tracking-tight">Sign in to view your cart</h1>
-        <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+        <p className="mx-auto mt-2 max-w-md text-slate-500">
           Your cart is saved to your account. Sign in to review items and check out.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -162,16 +162,16 @@ export default function Cart() {
       {/* Heading */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">
-            <Link to="/products" className="transition-colors hover:text-primary">
+          <p className="text-sm text-slate-500">
+            <Link to="/products" className="transition-colors hover:text-violet-600">
               Products
             </Link>{' '}
-            / <span className="text-foreground">Cart</span>
+            / <span className="text-slate-900">Cart</span>
           </p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight">Shopping cart</h1>
         </div>
         {!loading && items.length > 0 && (
-          <Link to="/products" className="text-sm font-medium text-primary hover:underline">
+          <Link to="/products" className="text-sm font-medium text-violet-600 hover:underline">
             Continue shopping →
           </Link>
         )}
@@ -198,12 +198,12 @@ export default function Cart() {
 
       {/* Empty cart */}
       {!loading && items.length === 0 && (
-        <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-20 text-center">
-          <span className="flex size-16 items-center justify-center rounded-full bg-muted">
-            <ShoppingCart className="size-8 text-muted-foreground" />
+        <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/50 px-6 py-20 text-center">
+          <span className="flex size-16 items-center justify-center rounded-full bg-slate-100">
+            <ShoppingCart className="size-8 text-slate-500" />
           </span>
           <h2 className="text-xl font-semibold">Your cart is empty</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="max-w-sm text-sm text-slate-500">
             Looks like you haven't added anything yet. Explore the catalog and find something you love.
           </p>
           <Link to="/products" className="mt-2">
@@ -219,7 +219,7 @@ export default function Cart() {
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1fr_360px]">
           {/* Left: items + coupon */}
           <div className="min-w-0 space-y-5">
-            <Card className="divide-y divide-border overflow-hidden">
+            <Card className="divide-y divide-slate-200 overflow-hidden">
               {items.map((item) => {
                 const product = item.productId || {}
                 const store = item.storeId || {}
@@ -241,27 +241,27 @@ export default function Cart() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           {store.storeName && (
-                            <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                               <Store className="size-3" /> {store.storeName}
                             </p>
                           )}
                           <Link
                             to={`/product/${product._id}`}
-                            className="mt-0.5 line-clamp-2 text-sm font-medium transition-colors hover:text-primary"
+                            className="mt-0.5 line-clamp-2 text-sm font-medium transition-colors hover:text-violet-600"
                           >
                             {product.title || 'Product'}
                           </Link>
                           {item.variantName && (
-                            <span className="mt-1 inline-block rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                            <span className="mt-1 inline-block rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-500">
                               {item.variantName}
                             </span>
                           )}
                         </div>
                         <div className="shrink-0 text-right">
                           <p className="text-sm font-bold">{formatPrice(item.price)}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-slate-500">
                             {item.quantity} × {formatPrice(item.price)} ={' '}
-                            <span className="font-semibold text-foreground">
+                            <span className="font-semibold text-slate-900">
                               {formatPrice(item.price * item.quantity)}
                             </span>
                           </p>
@@ -280,13 +280,13 @@ export default function Cart() {
                         <button
                           onClick={() => setRemoveTarget(item)}
                           disabled={busyItemId === item._id}
-                          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
                         >
                           <Trash2 className="size-3.5" /> Remove
                         </button>
                       </div>
                       {outOfStock && (
-                        <p className="mt-1 text-xs font-medium text-danger-600">Out of stock — remove to continue</p>
+                        <p className="mt-1 text-xs font-medium text-red-600">Out of stock — remove to continue</p>
                       )}
                     </div>
                   </motion.div>
@@ -297,9 +297,9 @@ export default function Cart() {
             {/* Coupon */}
             <Card className="p-5">
               <h2 className="flex items-center gap-2 font-semibold">
-                <Lock className="size-4 text-primary" /> Apply coupon
+                <Lock className="size-4 text-violet-600" /> Apply coupon
               </h2>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-slate-500">
                 Have a promo code? Enter it below — we'll verify it against your order.
               </p>
               <div className="mt-3">
@@ -324,7 +324,7 @@ export default function Cart() {
               >
                 Proceed to checkout <ArrowRight className="size-4" />
               </Button>
-              <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+              <p className="flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
                 <Lock className="size-3" /> Secure checkout · Free delivery
               </p>
             </OrderSummary>

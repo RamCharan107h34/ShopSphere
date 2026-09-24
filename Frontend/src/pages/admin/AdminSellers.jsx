@@ -69,14 +69,14 @@ export default function AdminSellers() {
       <PageIntro title="Seller management" subtitle="Review store applications and manage seller onboarding." />
 
       {/* Status tabs */}
-      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-border bg-card p-1 shadow-card">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
         {TABS.map((item) => (
           <button
             key={item.key}
             onClick={() => setTab(item.key)}
             className={cn(
               'rounded-lg px-4 py-1.5 text-sm font-medium transition-colors',
-              tab === item.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+              tab === item.key ? 'bg-slate-700 text-white' : 'text-slate-500 hover:bg-slate-100',
             )}
           >
             {item.label}
@@ -85,14 +85,14 @@ export default function AdminSellers() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : applications?.length ? (
         <div className="space-y-3">
           {applications.map((store) => {
             const status = STORE_STATUS[store.status] || { label: store.status, variant: 'neutral' }
             return (
-              <div key={store._id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-card">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div key={store._id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
                   <Store className="size-5" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -100,23 +100,23 @@ export default function AdminSellers() {
                     <p className="font-semibold">{store.storeName}</p>
                     <Badge variant={status.variant}>{status.label}</Badge>
                   </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-0.5 text-xs text-slate-500">
                     {store.sellerId?.name} · {store.sellerId?.email} · Applied{' '}
                     {new Date(store.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
-                  {store.description && <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{store.description}</p>}
+                  {store.description && <p className="mt-1 line-clamp-1 text-xs text-slate-500">{store.description}</p>}
                   {store.status === 'rejected' && store.rejectionReason && (
-                    <p className="mt-1 text-xs text-destructive">Reason: {store.rejectionReason}</p>
+                    <p className="mt-1 text-xs text-red-600">Reason: {store.rejectionReason}</p>
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  <span className="mr-2 text-xs text-muted-foreground">Commission {store.commissionRate}%</span>
+                  <span className="mr-2 text-xs text-slate-500">Commission {store.commissionRate}%</span>
                   {store.status === 'pending' && (
                     <>
                       <Button size="sm" variant="success" onClick={() => { setCommission(String(store.commissionRate ?? 10)); setApproveTarget(store) }}>
                         <CheckCircle2 /> Approve
                       </Button>
-                      <Button size="sm" variant="outline" className="text-destructive hover:bg-danger-50" onClick={() => { setReason(''); setRejectTarget(store) }}>
+                      <Button size="sm" variant="outline" className="text-red-600 hover:bg-red-50" onClick={() => { setReason(''); setRejectTarget(store) }}>
                         <XCircle /> Reject
                       </Button>
                     </>
@@ -132,10 +132,10 @@ export default function AdminSellers() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Store className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Store className="size-6" /></span>
           <h2 className="text-base font-semibold">No applications here</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Seller store applications will appear here for review.</p>
+          <p className="max-w-sm text-sm text-slate-500">Seller store applications will appear here for review.</p>
         </div>
       )}
 
@@ -154,7 +154,7 @@ export default function AdminSellers() {
       >
         <label className="mb-1.5 block text-sm font-medium">Platform commission rate (%)</label>
         <Input type="number" min="0" max="100" value={commission} onChange={(event) => setCommission(event.target.value)} />
-        <p className="mt-1.5 text-xs text-muted-foreground">A percentage of every delivered order this store earns, taken as the platform fee.</p>
+        <p className="mt-1.5 text-xs text-slate-500">A percentage of every delivered order this store earns, taken as the platform fee.</p>
       </Modal>
 
       {/* Reject modal */}

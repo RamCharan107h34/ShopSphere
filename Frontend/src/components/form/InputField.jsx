@@ -29,7 +29,7 @@ export function InputField({
       {label && (
         <Label htmlFor={name}>
           {label}
-          {required && <span className="ml-0.5 text-danger-500">*</span>}
+          {required && <span className="ml-0.5 text-red-500">*</span>}
         </Label>
       )}
 
@@ -41,8 +41,8 @@ export function InputField({
           aria-invalid={showError || undefined}
           aria-describedby={showError ? `${name}-error` : undefined}
           className={cn(
-            showError && 'border-danger-500 focus-visible:ring-danger-500/60',
-            isValid && 'border-success/60 focus-visible:ring-success/60',
+            showError && 'border-red-500 focus-visible:ring-red-500/60',
+            isValid && 'border-emerald-500/60 focus-visible:ring-emerald-500/60',
             isPassword && 'pr-10',
           )}
           {...props}
@@ -53,14 +53,14 @@ export function InputField({
             tabIndex={-1}
             onClick={() => setShowPassword((value) => !value)}
             aria-label={showPassword ? 'Hide password' : 'Show password'}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-slate-500 transition-colors hover:text-slate-900"
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         ) : (
           isValid && (
             <CircleCheck
-              className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-success"
+              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-emerald-500"
               aria-label="Valid"
             />
           )
@@ -68,11 +68,11 @@ export function InputField({
       </div>
 
       {showError ? (
-        <p id={`${name}-error`} role="alert" className="flex items-center gap-1.5 text-sm text-danger-600">
+        <p id={`${name}-error`} role="alert" className="flex items-center gap-1.5 text-sm text-red-600">
           <CircleAlert className="size-3.5 shrink-0" /> {error}
         </p>
       ) : (
-        hint && <p className="text-xs text-muted-foreground">{hint}</p>
+        hint && <p className="text-xs text-slate-500">{hint}</p>
       )}
     </div>
   )

@@ -76,7 +76,7 @@ function Login() {
         {serverError && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-danger-500/30 bg-danger-50 px-3.5 py-3 text-sm text-danger-700"
+            className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-50 px-3.5 py-3 text-sm text-red-700"
           >
             <CircleAlert className="mt-0.5 size-4 shrink-0" />
             {serverError}
@@ -112,11 +112,11 @@ function Login() {
         />
 
         <div className="flex items-center justify-between text-sm">
-          <label className="flex items-center gap-2 text-muted-foreground">
-            <input type="checkbox" className="size-4 rounded border-border accent-primary" />
+          <label className="flex items-center gap-2 text-slate-500">
+            <input type="checkbox" className="size-4 rounded border-slate-200 accent-primary" />
             Remember me
           </label>
-          <Link to="/forgot-password" className="font-medium text-primary hover:underline">
+          <Link to="/forgot-password" className="font-medium text-violet-600 hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -126,15 +126,15 @@ function Login() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-slate-500">
         New to ShopSphere?{' '}
-        <Link to="/register" className="font-medium text-primary hover:underline">
+        <Link to="/register" className="font-medium text-violet-600 hover:underline">
           Create an account
         </Link>
       </p>
-      <p className="mt-2 text-center text-sm text-muted-foreground">
+      <p className="mt-2 text-center text-sm text-slate-500">
         Want to sell?{' '}
-        <Link to="/register/seller" className="font-medium text-primary hover:underline">
+        <Link to="/register/seller" className="font-medium text-violet-600 hover:underline">
           Register your store
         </Link>
       </p>

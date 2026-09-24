@@ -79,14 +79,14 @@ export default function AdminDisputes() {
     <div>
       <PageIntro title="Disputes & support" subtitle="Resolve customer issues — order disputes, refunds and general queries." />
 
-      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-border bg-card p-1 shadow-card">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
         {TABS.map((item) => (
           <button
             key={item.key}
             onClick={() => setTab(item.key)}
             className={cn(
               'rounded-lg px-4 py-1.5 text-sm font-medium transition-colors',
-              tab === item.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+              tab === item.key ? 'bg-slate-700 text-white' : 'text-slate-500 hover:bg-slate-100',
             )}
           >
             {item.label}
@@ -95,14 +95,14 @@ export default function AdminDisputes() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-32 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : tickets?.length ? (
         <div className="space-y-3">
           {tickets.map((ticket) => {
             const category = CATEGORY_META[ticket.category] || { label: ticket.category, variant: 'neutral' }
             const priority = PRIORITY_META[ticket.priority] || { label: ticket.priority, variant: 'neutral' }
             return (
-              <article key={ticket._id} className="rounded-2xl border border-border bg-card p-5 shadow-card">
+              <article key={ticket._id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -111,14 +111,14 @@ export default function AdminDisputes() {
                       <Badge variant={priority.variant}>{priority.label}</Badge>
                       <StatusBadge status={ticket.status} meta={TICKET_STATUS} />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-xs text-slate-500">
                       {ticket.customerId?.name} · {ticket.customerId?.email}
                       {ticket.orderId?.orderNumber ? ` · Order ${ticket.orderId.orderNumber}` : ''} ·{' '}
                       {new Date(ticket.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{ticket.description}</p>
+                    <p className="mt-2 line-clamp-2 text-sm text-slate-500">{ticket.description}</p>
                     {ticket.resolutionNote && (
-                      <p className="mt-2 rounded-lg bg-success/10 px-3 py-2 text-xs text-success-700">
+                      <p className="mt-2 rounded-lg bg-emerald-100 px-3 py-2 text-xs text-emerald-700">
                         <span className="font-semibold">Resolution:</span> {ticket.resolutionNote}
                       </p>
                     )}
@@ -161,10 +161,10 @@ export default function AdminDisputes() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Inbox className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Inbox className="size-6" /></span>
           <h2 className="text-base font-semibold">No {tab === 'dispute' ? 'disputes' : 'tickets'} here</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Customer-raised issues will appear here for handling.</p>
+          <p className="max-w-sm text-sm text-slate-500">Customer-raised issues will appear here for handling.</p>
         </div>
       )}
 

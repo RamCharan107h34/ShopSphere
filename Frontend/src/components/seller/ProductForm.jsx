@@ -261,16 +261,16 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
 
   const fieldError = (key) =>
     errors[key] ? (
-      <p role="alert" className="mt-1 text-xs text-destructive">{errors[key]}</p>
+      <p role="alert" className="mt-1 text-xs text-red-600">{errors[key]}</p>
     ) : null
 
   const discount = discountPercent(Number(form.price), Number(form.originalPrice))
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       {/* Basics */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Basics</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Basics</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-sm font-medium">Product name *</label>
@@ -295,19 +295,19 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
       </section>
 
       {/* Product attributes */}
-      <section className="space-y-3 border-t border-border pt-5">
+      <section className="space-y-3 border-t border-slate-200 pt-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Product attributes</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Product attributes</h2>
           <Button type="button" variant="outline" size="sm" onClick={addAttribute}><Plus /> Add attribute</Button>
         </div>
-        <p className="text-xs text-muted-foreground">Specs shown in the product details table — e.g. Color, Material, Warranty.</p>
-        {form.attributes.length === 0 && <p className="rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">No attributes yet.</p>}
+        <p className="text-xs text-slate-500">Specs shown in the product details table — e.g. Color, Material, Warranty.</p>
+        {form.attributes.length === 0 && <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">No attributes yet.</p>}
         <div className="space-y-2">
           {form.attributes.map((attribute, index) => (
             <div key={index} className="flex items-center gap-2">
               <Input value={attribute.name} onChange={setAttribute(index, 'name')} placeholder="Name (e.g. Color)" className="max-w-[180px]" />
               <Input value={attribute.value} onChange={setAttribute(index, 'value')} placeholder="Value (e.g. Midnight Black)" className="flex-1" />
-              <Button type="button" variant="ghost" size="icon" onClick={() => removeAttribute(index)} aria-label="Remove attribute" className="text-muted-foreground hover:text-destructive">
+              <Button type="button" variant="ghost" size="icon" onClick={() => removeAttribute(index)} aria-label="Remove attribute" className="text-slate-500 hover:text-red-600">
                 <Trash2 className="size-4" />
               </Button>
             </div>
@@ -315,8 +315,8 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
         </div>
       </section>
       {/* Pricing & stock */}
-      <section className="space-y-4 border-t border-border pt-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Pricing & stock</h2>
+      <section className="space-y-4 border-t border-slate-200 pt-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Pricing & stock</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="mb-1.5 block text-sm font-medium">Selling price (₹) *</label>
@@ -332,13 +332,13 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
             {discount ? (
               <Badge variant="danger" className="mb-0.5">-{discount}% off</Badge>
             ) : (
-              <span className="text-xs text-muted-foreground">Set a higher MRP to show a discount badge.</span>
+              <span className="text-xs text-slate-500">Set a higher MRP to show a discount badge.</span>
             )}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">SKU</label>
             <Input value={form.sku} onChange={set('sku')} placeholder="e.g. TN-EARBUD-128" />
-            <p className="mt-1 text-xs text-muted-foreground">Your internal stock-keeping code.</p>
+            <p className="mt-1 text-xs text-slate-500">Your internal stock-keeping code.</p>
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Stock</label>
@@ -363,12 +363,12 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
 
 
       {/* AI copy assistant */}
-      <section className="space-y-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-background to-fuchsia-50/60 p-5">
+      <section className="space-y-4 rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-slate-50 to-fuchsia-50 p-5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary"><Wand2 className="size-4" /></span>
+          <span className="flex size-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600"><Wand2 className="size-4" /></span>
           <div className="min-w-0 flex-1">
             <h2 className="text-sm font-semibold">AI copy assistant</h2>
-            <p className="text-xs text-muted-foreground">Generate a ready-to-publish description and key selling points from your product details.</p>
+            <p className="text-xs text-slate-500">Generate a ready-to-publish description and key selling points from your product details.</p>
           </div>
           <Badge variant="secondary">Beta</Badge>
         </div>
@@ -398,23 +398,23 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
               <><Sparkles /> Generate with AI</>
             )}
           </Button>
-          {!form.title.trim() && <p className="text-xs text-muted-foreground">Add a product name above first.</p>}
+          {!form.title.trim() && <p className="text-xs text-slate-500">Add a product name above first.</p>}
         </div>
 
         {aiError && (
-          <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2.5 text-xs text-warning-800">
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
             <Sparkles className="mt-0.5 size-3.5 shrink-0" />
             <p><span className="font-semibold">AI service unavailable</span> — {aiError}. Showing an offline draft instead; it is fully editable.</p>
           </div>
         )}
 
         {aiResult && (
-          <div className="space-y-4 rounded-xl border border-border bg-card p-4">
+          <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Badge variant={aiResult.source === 'api' ? 'success' : 'warning'}>
                 {aiResult.source === 'api' ? '✦ AI generated' : 'Offline draft'}
               </Badge>
-              <p className="text-xs text-muted-foreground">Editable — tweak the copy below, then accept it.</p>
+              <p className="text-xs text-slate-500">Editable — tweak the copy below, then accept it.</p>
             </div>
 
             {/* Generated description */}
@@ -435,7 +435,7 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
                 value={aiResult.description}
                 onChange={(event) => setAiResult((current) => ({ ...current, description: event.target.value }))}
                 rows={4}
-                className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
               />
             </div>
 
@@ -456,7 +456,7 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
               <ul className="space-y-1.5">
                 {aiResult.sellingPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <Sparkles className="mt-2 size-3.5 shrink-0 text-primary" />
+                    <Sparkles className="mt-2 size-3.5 shrink-0 text-indigo-600" />
                     <input
                       value={point}
                       onChange={(event) =>
@@ -466,7 +466,7 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
                           return { ...current, sellingPoints }
                         })
                       }
-                      className="w-full rounded-lg border border-input bg-card px-3 py-1.5 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                     />
                   </li>
                 ))}
@@ -477,9 +477,9 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
       </section>
 
       {/* Description */}
-      <section className="space-y-2 border-t border-border pt-5">
+      <section className="space-y-2 border-t border-slate-200 pt-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Description</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Description</h2>
           {form.features.length > 0 && <Badge variant="secondary">{form.features.length} selling point{form.features.length > 1 ? 's' : ''}</Badge>}
         </div>
         <textarea
@@ -487,45 +487,45 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
           onChange={set('description')}
           rows={5}
           aria-invalid={!!errors.description}
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
           placeholder="Describe the product, materials, what's in the box… (or let the AI assistant draft it above)"
         />
         {fieldError('description')}
 
         {form.features.length > 0 && (
-          <div className="space-y-1.5 rounded-xl border border-border bg-muted/30 p-3">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Key selling points</p>
+          <div className="space-y-1.5 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Key selling points</p>
             {form.features.map((feature, index) => (
               <div key={index} className="flex items-center gap-2">
-                <Sparkles className="size-3.5 shrink-0 text-primary" />
+                <Sparkles className="size-3.5 shrink-0 text-indigo-600" />
                 <input
                   value={feature}
                   onChange={(event) => setFeature(index, event.target.value)}
-                  className="w-full rounded-lg border border-input bg-card px-3 py-1.5 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 />
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeFeature(index)} aria-label="Remove selling point" className="size-7 text-muted-foreground hover:text-destructive">
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeFeature(index)} aria-label="Remove selling point" className="size-7 text-slate-500 hover:text-red-600">
                   <Trash2 className="size-3.5" />
                 </Button>
               </div>
             ))}
-            <Button type="button" variant="ghost" size="sm" onClick={addFeature} className="text-primary"><Plus /> Add point</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={addFeature} className="text-indigo-600"><Plus /> Add point</Button>
           </div>
         )}
       </section>
 
       {/* Images */}
-      <section className="space-y-3 border-t border-border pt-5">
+      <section className="space-y-3 border-t border-slate-200 pt-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Images</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Images</h2>
           <Button type="button" variant="outline" size="sm" onClick={addImage}><Plus /> Add image</Button>
         </div>
-        <p className="text-xs text-muted-foreground">Paste image URLs (one per row). The first image is the cover.</p>
+        <p className="text-xs text-slate-500">Paste image URLs (one per row). The first image is the cover.</p>
         <div className="space-y-2">
           {form.images.map((url, index) => (
             <div key={index} className="flex items-center gap-2">
               <Input value={url} onChange={setImage(index)} placeholder="https://…" />
               {form.images.length > 1 && (
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeImage(index)} aria-label="Remove image" className="text-muted-foreground hover:text-destructive">
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeImage(index)} aria-label="Remove image" className="text-slate-500 hover:text-red-600">
                   <Trash2 className="size-4" />
                 </Button>
               )}
@@ -535,19 +535,19 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
       </section>
 
       {/* Variants */}
-      <section className="space-y-3 border-t border-border pt-5">
+      <section className="space-y-3 border-t border-slate-200 pt-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Variants (optional)</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Variants (optional)</h2>
           <Button type="button" variant="outline" size="sm" onClick={addVariant}><Plus /> Add variant</Button>
         </div>
-        <p className="text-xs text-muted-foreground">e.g. "Size: M, Color: Blue" with its own SKU, price and stock.</p>
-        {form.variants.length === 0 && <p className="rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">No variants — this product sells as a single item.</p>}
+        <p className="text-xs text-slate-500">e.g. "Size: M, Color: Blue" with its own SKU, price and stock.</p>
+        {form.variants.length === 0 && <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">No variants — this product sells as a single item.</p>}
         <div className="space-y-3">
           {form.variants.map((variant, index) => (
-            <div key={index} className="space-y-2 rounded-xl border border-border bg-muted/30 p-3">
+            <div key={index} className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="flex items-center gap-2">
                 <Input value={variant.name} onChange={setVariant(index, 'name')} placeholder="Variant name (e.g. 128GB, Black)" className="flex-1" />
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(index)} aria-label="Remove variant" className="text-muted-foreground hover:text-destructive">
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(index)} aria-label="Remove variant" className="text-slate-500 hover:text-red-600">
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -561,7 +561,7 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
         </div>
       </section>
 
-      <div className="flex justify-end gap-2 border-t border-border pt-4">
+      <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
         <Button type="submit" loading={submitting}>{submitLabel}</Button>
       </div>
     </form>

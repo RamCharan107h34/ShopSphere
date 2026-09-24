@@ -35,7 +35,7 @@ export default function SupportDashboard() {
         title="Support dashboard"
         subtitle="Your ticket queue at a glance — stay on top of customer issues."
         actions={
-          <button onClick={() => navigate('/support/tickets')} className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent">
+          <button onClick={() => navigate('/support/tickets')} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:-translate-y-px hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700">
             Open ticket queue <ArrowRight className="ml-1 inline size-3.5" />
           </button>
         }
@@ -43,7 +43,7 @@ export default function SupportDashboard() {
 
       {loading ? (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />)}
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-100" />)}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -56,13 +56,13 @@ export default function SupportDashboard() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         {/* Recent tickets */}
-        <section className="rounded-2xl border border-border bg-card shadow-card">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <section className="rounded-2xl bg-white ring-1 ring-slate-900/[0.06] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_-18px_rgba(15,23,42,0.22)]">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <h2 className="text-sm font-semibold">Recent tickets</h2>
-            <button onClick={() => navigate('/support/tickets')} className="text-xs font-medium text-primary hover:underline">View all</button>
+            <button onClick={() => navigate('/support/tickets')} className="text-xs font-medium text-cyan-600 hover:underline">View all</button>
           </div>
           {loading ? (
-            <div className="space-y-3 p-5">{[...Array(3)].map((_, i) => <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />)}</div>
+            <div className="space-y-3 p-5">{[...Array(3)].map((_, i) => <div key={i} className="h-24 animate-pulse rounded-xl bg-slate-100" />)}</div>
           ) : recent.length ? (
             <div className="space-y-3 p-5">
               {recent.map((ticket) => (
@@ -70,14 +70,14 @@ export default function SupportDashboard() {
               ))}
             </div>
           ) : (
-            <p className="px-5 py-10 text-center text-sm text-muted-foreground">No tickets yet.</p>
+            <p className="px-5 py-10 text-center text-sm text-slate-500">No tickets yet.</p>
           )}
         </section>
 
         {/* Priority breakdown */}
-        <section className="rounded-2xl border border-border bg-card shadow-card">
-          <div className="flex items-center gap-2 border-b border-border px-5 py-4">
-            <Clock className="size-4 text-primary" />
+        <section className="rounded-2xl bg-white ring-1 ring-slate-900/[0.06] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_-18px_rgba(15,23,42,0.22)]">
+          <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
+            <Clock className="size-4 text-cyan-600" />
             <h2 className="text-sm font-semibold">Priority load</h2>
           </div>
           <div className="space-y-4 px-5 py-5">
@@ -91,16 +91,16 @@ export default function SupportDashboard() {
                     <Badge variant={meta.variant}>{meta.label}</Badge>
                     <span className="font-semibold">{count}</span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className={`h-full rounded-full ${key === 'high' ? 'bg-destructive' : key === 'medium' ? 'bg-warning-500' : 'bg-muted-foreground'}`}
+                      className={`h-full rounded-full ${key === 'high' ? 'bg-red-500' : key === 'medium' ? 'bg-amber-500' : 'bg-slate-400'}`}
                       style={{ width: `${Math.max(4, (count / max) * 100)}%` }}
                     />
                   </div>
                 </div>
               )
             })}
-            <p className="pt-1 text-xs text-muted-foreground">
+            <p className="pt-1 text-xs text-slate-500">
               {counts.open} open ticket{counts.open !== 1 ? 's' : ''} — triage high priority first.
             </p>
           </div>
@@ -118,9 +118,9 @@ export default function SupportDashboard() {
           <button
             key={item.label}
             onClick={() => navigate(item.to)}
-            className="rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm font-medium shadow-card transition-colors hover:border-primary/40"
+            className="group rounded-2xl bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 ring-1 ring-slate-900/[0.06] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:text-slate-900 hover:ring-cyan-200 hover:shadow-[0_18px_40px_-22px_rgba(15,23,42,0.3)]"
           >
-            {item.label} <ArrowRight className="float-right mt-0.5 size-3.5 text-muted-foreground" />
+            {item.label} <ArrowRight className="float-right mt-0.5 size-3.5 text-slate-500" />
           </button>
         ))}
       </div>

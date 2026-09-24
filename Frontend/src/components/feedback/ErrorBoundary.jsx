@@ -20,21 +20,21 @@ export class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
-          <span className="flex size-16 items-center justify-center rounded-2xl bg-danger-50 text-3xl">⚠️</span>
-          <h1 className="text-2xl font-bold tracking-tight">Something went wrong</h1>
-          <p className="max-w-md text-sm text-muted-foreground">
+          <span className="flex size-16 items-center justify-center rounded-2xl bg-red-50 text-3xl">⚠️</span>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Something went wrong</h1>
+          <p className="max-w-md text-sm text-slate-500">
             An unexpected error occurred. Reloading usually fixes it — your cart and session are safe.
           </p>
           <div className="mt-2 flex gap-3">
             <button
               onClick={() => window.location.reload()}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
             >
               Reload page
             </button>
             <a
               href="/"
-              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-accent"
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
             >
               Back to home
             </a>

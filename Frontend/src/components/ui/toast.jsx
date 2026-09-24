@@ -9,10 +9,10 @@ const ToastContext = createContext(null)
 const DEFAULT_DURATION = 4000
 
 const variantConfig = {
-  success: { icon: CheckCircle2, iconClass: 'text-success' },
-  error: { icon: XCircle, iconClass: 'text-danger-600' },
-  warning: { icon: TriangleAlert, iconClass: 'text-warning-600' },
-  info: { icon: Info, iconClass: 'text-primary' },
+  success: { icon: CheckCircle2, iconClass: 'text-emerald-500' },
+  error: { icon: XCircle, iconClass: 'text-red-600' },
+  warning: { icon: TriangleAlert, iconClass: 'text-amber-600' },
+  info: { icon: Info, iconClass: 'text-violet-600' },
 }
 
 // Provider: mount once near the app root
@@ -62,19 +62,19 @@ export function ToastProvider({ children }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-elevated"
+                className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
               >
                 <Icon className={cn('mt-0.5 size-4 shrink-0', config.iconClass)} />
                 <div className="min-w-0 flex-1">
-                  {item.title && <p className="text-sm font-semibold leading-tight">{item.title}</p>}
+                  {item.title && <p className="text-sm leading-tight font-semibold text-slate-900">{item.title}</p>}
                   {item.description && (
-                    <p className="mt-0.5 text-sm text-muted-foreground">{item.description}</p>
+                    <p className="mt-0.5 text-sm text-slate-500">{item.description}</p>
                   )}
                 </div>
                 <button
                   onClick={() => dismiss(item.id)}
                   aria-label="Dismiss notification"
-                  className="rounded p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="rounded p-0.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 >
                   <X className="size-3.5" />
                 </button>

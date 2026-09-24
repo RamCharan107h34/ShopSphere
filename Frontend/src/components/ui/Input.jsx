@@ -1,14 +1,16 @@
 import { cn } from '../../lib/utils.js'
+import { layout, useAccent } from '../../design/context.js'
 
-export function Input({ className, type, ...props }) {
+/** Text input that adopts the focus colour of the surrounding workspace. */
+export function Input({ className, type = 'text', ...props }) {
+  const accent = useAccent()
   return (
     <input
       type={type}
-      className={cn(
-        'flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-        className,
-      )}
+      className={cn(layout.field, 'h-10', accent.classes.focusRing, className)}
       {...props}
     />
   )
 }
+
+export default Input

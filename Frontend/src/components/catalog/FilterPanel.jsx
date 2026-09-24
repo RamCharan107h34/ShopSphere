@@ -17,7 +17,7 @@ function CategoryList({ categories, loading, value, onSelect }) {
   }
 
   if (!categories?.length) {
-    return <p className="text-sm text-muted-foreground">No categories yet.</p>
+    return <p className="text-sm text-slate-500">No categories yet.</p>
   }
 
   return (
@@ -27,8 +27,8 @@ function CategoryList({ categories, loading, value, onSelect }) {
         className={cn(
           'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors',
           value === ''
-            ? 'bg-primary font-medium text-primary-foreground'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+            ? 'bg-violet-600 font-medium text-white'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
         )}
       >
         All categories
@@ -40,8 +40,8 @@ function CategoryList({ categories, loading, value, onSelect }) {
           className={cn(
             'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors',
             value === category._id
-              ? 'bg-primary font-medium text-primary-foreground'
-              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+              ? 'bg-violet-600 font-medium text-white'
+              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
           )}
         >
           <span className="line-clamp-1">{category.name}</span>
@@ -84,7 +84,7 @@ function FilterBody({
     <div className="space-y-6">
       {/* Category */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="mb-3 text-sm font-semibold tracking-wider text-slate-500 uppercase">
           Category
         </h3>
         <CategoryList
@@ -100,7 +100,7 @@ function FilterBody({
 
       {/* Price */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="mb-3 text-sm font-semibold tracking-wider text-slate-500 uppercase">
           Price (₹)
         </h3>
         <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ function FilterBody({
             onKeyDown={(event) => event.key === 'Enter' && applyPrice()}
             aria-label="Minimum price"
           />
-          <span className="text-muted-foreground">–</span>
+          <span className="text-slate-400">–</span>
           <Input
             type="number"
             min="0"
@@ -146,10 +146,10 @@ function FilterBody({
 
       {/* Availability */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="mb-3 text-sm font-semibold tracking-wider text-slate-500 uppercase">
           Availability
         </h3>
-        <label className="flex cursor-pointer items-center gap-2.5 text-sm text-foreground">
+        <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-900">
           <input
             type="checkbox"
             checked={inStock}
@@ -157,7 +157,7 @@ function FilterBody({
               onInStock(event.target.checked)
               onClose?.()
             }}
-            className="size-4 rounded border-border accent-primary"
+            className="size-4 rounded border-slate-300 accent-violet-600"
           />
           In stock only
         </label>
@@ -166,7 +166,7 @@ function FilterBody({
       {hasFilters && (
         <button
           onClick={onClear}
-          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+          className="text-sm font-medium text-violet-600 underline-offset-4 hover:underline"
         >
           Clear all filters
         </button>
@@ -184,17 +184,17 @@ export function FilterPanel({
 }) {
   if (open) {
     return (
-      <div className={cn('rounded-2xl border border-border bg-card p-5 shadow-card', className)}>
+      <div className={cn('rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', className)}>
         <FilterBody onClose={onClose} {...filterProps} />
       </div>
     )
   }
   return (
     <aside className={cn('hidden lg:block', className)}>
-      <div className="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-card">
+      <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <SlidersHorizontal className="size-4 text-primary" /> Filters
+          <h2 className="flex items-center gap-2 font-semibold text-slate-900">
+            <SlidersHorizontal className="size-4 text-violet-600" /> Filters
           </h2>
         </div>
         <FilterBody {...filterProps} />

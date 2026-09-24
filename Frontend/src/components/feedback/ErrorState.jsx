@@ -12,14 +12,14 @@ export function ErrorState({
   return (
     <div
       role="alert"
-      className={`flex flex-col items-center gap-3 rounded-2xl border border-danger-200 bg-danger-50/60 px-6 py-12 text-center ${className}`}
+      className={`flex flex-col items-center gap-3 rounded-2xl border border-red-200 bg-red-50/60 px-6 py-12 text-center ${className}`}
     >
-      <span className="flex size-12 items-center justify-center rounded-full bg-danger-100">
-        <AlertTriangle className="size-6 text-danger-600" />
+      <span className="flex size-12 items-center justify-center rounded-full bg-red-100">
+        <AlertTriangle className="size-6 text-red-600" />
       </span>
       <div>
-        <p className="font-semibold">{title}</p>
-        {message && <p className="mt-1 max-w-sm text-sm text-muted-foreground">{message}</p>}
+        <p className="font-semibold text-slate-900">{title}</p>
+        {message && <p className="mt-1 max-w-sm text-sm text-slate-500">{message}</p>}
       </div>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry} className="mt-1">

@@ -15,7 +15,7 @@ export function Pagination({ page, totalPages, onChange }) {
 
   const items = pageWindow(page, totalPages)
   const navButton =
-    'flex size-9 items-center justify-center rounded-lg border border-border text-sm font-medium transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40'
+    'flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-40'
 
   return (
     <nav aria-label="Pagination" className="flex items-center justify-center gap-1.5">
@@ -32,13 +32,13 @@ export function Pagination({ page, totalPages, onChange }) {
         const gap = index > 0 && item - items[index - 1] > 1
         return (
           <span key={item} className="flex items-center gap-1.5">
-            {gap && <span className="px-1 text-sm text-muted-foreground">…</span>}
+            {gap && <span className="px-1 text-sm text-slate-500">…</span>}
             <button
               className={cn(
                 'size-9 rounded-lg border text-sm font-medium transition-colors',
                 item === page
-                  ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                  : 'border-border hover:bg-accent',
+                  ? 'border-violet-600 bg-violet-600 text-white shadow-sm'
+                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100',
               )}
               onClick={() => onChange(item)}
               aria-current={item === page ? 'page' : undefined}

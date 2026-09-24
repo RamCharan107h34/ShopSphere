@@ -97,7 +97,7 @@ function Register() {
         {serverError && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-danger-500/30 bg-danger-50 px-3.5 py-3 text-sm text-danger-700"
+            className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-50 px-3.5 py-3 text-sm text-red-700"
           >
             <CircleAlert className="mt-0.5 size-4 shrink-0" />
             {serverError}
@@ -183,10 +183,10 @@ function Register() {
               />
             </div>
 
-            <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-              <Store className="mb-1 size-4 text-primary" />
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+              <Store className="mb-1 size-4 text-violet-600" />
               Selling on ShopSphere?{' '}
-              <Link to="/register/seller" className="font-medium text-primary hover:underline">
+              <Link to="/register/seller" className="font-medium text-violet-600 hover:underline">
                 Register a store instead
               </Link>
             </div>
@@ -220,7 +220,7 @@ function Register() {
               ))}
             </div>
 
-            <div className="flex items-start gap-2 rounded-lg border border-success/30 bg-success/5 px-3.5 py-3 text-sm text-success-700">
+            <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-sm text-emerald-700">
               <BadgeCheck className="mt-0.5 size-4 shrink-0" />
               You can skip this and add an address later from your profile.
             </div>
@@ -238,9 +238,9 @@ function Register() {
       </form>
 
       {step === 0 && (
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium text-violet-600 hover:underline">
             Sign in
           </Link>
         </p>

@@ -10,8 +10,8 @@ import { StatusBadge } from '../../components/account/StatusBadge.jsx'
 function Bar({ value, max }) {
   const width = max > 0 ? Math.max(8, Math.round((value / max) * 100)) : 0
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-      <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60 transition-all" style={{ width: `${width}%` }} />
+    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all" style={{ width: `${width}%` }} />
     </div>
   )
 }
@@ -24,7 +24,7 @@ export default function SellerAnalytics() {
     return (
       <div>
         <PageIntro title="Analytics" subtitle="Your store's performance at a glance." />
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
       </div>
     )
   }
@@ -45,9 +45,9 @@ export default function SellerAnalytics() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* Best sellers */}
-        <section className="rounded-2xl border border-border bg-card shadow-card">
-          <div className="flex items-center gap-2 border-b border-border px-5 py-4">
-            <BarChart3 className="size-4 text-primary" />
+        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-4">
+            <BarChart3 className="size-4 text-indigo-600" />
             <h2 className="text-sm font-semibold">Best-selling products</h2>
           </div>
           {bestSellers.length ? (
@@ -56,40 +56,40 @@ export default function SellerAnalytics() {
                 <li key={item._id}>
                   <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
                     <span className="min-w-0 truncate font-medium">{item.title}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{item.quantitySold} sold · {formatPrice(item.revenue)}</span>
+                    <span className="shrink-0 text-xs text-slate-500">{item.quantitySold} sold · {formatPrice(item.revenue)}</span>
                   </div>
                   <Bar value={item.quantitySold} max={maxSold} />
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-10 text-center text-sm text-muted-foreground">No sales yet — best sellers appear once orders roll in.</p>
+            <p className="px-5 py-10 text-center text-sm text-slate-500">No sales yet — best sellers appear once orders roll in.</p>
           )}
         </section>
 
         {/* Product health */}
-        <section className="rounded-2xl border border-border bg-card shadow-card">
-          <div className="flex items-center gap-2 border-b border-border px-5 py-4">
-            <Boxes className="size-4 text-primary" />
+        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-4">
+            <Boxes className="size-4 text-indigo-600" />
             <h2 className="text-sm font-semibold">Product health</h2>
           </div>
           <div className="space-y-3 px-5 py-5">
             {[
-              { label: 'Active listings', value: data?.activeProducts ?? 0, bar: data?.totalProducts ? (data.activeProducts / data.totalProducts) * 100 : 0, tone: 'bg-success' },
-              { label: 'Low on stock', value: data?.lowStockProducts ?? 0, bar: data?.totalProducts ? (data.lowStockProducts / data.totalProducts) * 100 : 0, tone: 'bg-warning-500' },
-              { label: 'Out of stock', value: data?.outOfStockProducts ?? 0, bar: data?.totalProducts ? (data.outOfStockProducts / data.totalProducts) * 100 : 0, tone: 'bg-destructive' },
+              { label: 'Active listings', value: data?.activeProducts ?? 0, bar: data?.totalProducts ? (data.activeProducts / data.totalProducts) * 100 : 0, tone: 'bg-emerald-500' },
+              { label: 'Low on stock', value: data?.lowStockProducts ?? 0, bar: data?.totalProducts ? (data.lowStockProducts / data.totalProducts) * 100 : 0, tone: 'bg-amber-500' },
+              { label: 'Out of stock', value: data?.outOfStockProducts ?? 0, bar: data?.totalProducts ? (data.outOfStockProducts / data.totalProducts) * 100 : 0, tone: 'bg-red-500' },
             ].map((row) => (
               <div key={row.label}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{row.label}</span>
+                  <span className="text-slate-500">{row.label}</span>
                   <span className="font-semibold">{row.value}</span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                   <div className={`h-full rounded-full ${row.tone}`} style={{ width: `${row.bar}%` }} />
                 </div>
               </div>
             ))}
-            <button onClick={() => navigate('/seller/inventory')} className="mt-2 w-full text-center text-xs font-medium text-primary hover:underline">
+            <button onClick={() => navigate('/seller/inventory')} className="mt-2 w-full text-center text-xs font-medium text-indigo-600 hover:underline">
               Manage inventory →
             </button>
           </div>
@@ -97,18 +97,18 @@ export default function SellerAnalytics() {
       </div>
 
       {/* Recent orders */}
-      <section className="mt-6 rounded-2xl border border-border bg-card shadow-card">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <h2 className="text-sm font-semibold">Recent orders</h2>
-          <button onClick={() => navigate('/seller/orders')} className="text-xs font-medium text-primary hover:underline">View all</button>
+          <button onClick={() => navigate('/seller/orders')} className="text-xs font-medium text-indigo-600 hover:underline">View all</button>
         </div>
         {data?.recentOrders?.length ? (
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-slate-200">
             {data.recentOrders.map((order) => (
               <li key={order._id} className="flex items-center justify-between gap-3 px-5 py-3.5">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{order.orderNumber}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-slate-500">
                     {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · {order.subOrder.itemsCount} item{order.subOrder.itemsCount !== 1 ? 's' : ''}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ export default function SellerAnalytics() {
             ))}
           </ul>
         ) : (
-          <p className="px-5 py-10 text-center text-sm text-muted-foreground">No orders yet.</p>
+          <p className="px-5 py-10 text-center text-sm text-slate-500">No orders yet.</p>
         )}
       </section>
     </div>

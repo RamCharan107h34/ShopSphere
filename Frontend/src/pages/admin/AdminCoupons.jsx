@@ -136,12 +136,12 @@ export default function AdminCoupons() {
       />
 
       {loading ? (
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
       ) : coupons?.length ? (
-        <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full min-w-[760px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <th className="px-5 py-3 font-semibold">Code</th>
                 <th className="px-5 py-3 font-semibold">Discount</th>
                 <th className="hidden px-5 py-3 font-semibold md:table-cell">Min order</th>
@@ -151,27 +151,27 @@ export default function AdminCoupons() {
                 <th className="px-5 py-3 text-right font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-200">
               {coupons.map((coupon) => {
                 const isExpired = expired(coupon)
                 return (
-                  <tr key={coupon._id} className="transition-colors hover:bg-muted/30">
+                  <tr key={coupon._id} className="transition-colors hover:bg-slate-50">
                     <td className="px-5 py-3">
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/40 px-2.5 py-1 font-mono text-xs font-bold tracking-wide">
-                        <Tag className="size-3 text-primary" /> {coupon.code}
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold tracking-wide">
+                        <Tag className="size-3 text-slate-700" /> {coupon.code}
                       </span>
                     </td>
                     <td className="px-5 py-3 font-medium">
                       {coupon.discountType === 'percentage' ? (
-                        <span className="inline-flex items-center gap-1"><Percent className="size-3.5 text-muted-foreground" />{coupon.discountValue}%{coupon.maxDiscount > 0 ? ` (max ₹${coupon.maxDiscount})` : ''}</span>
+                        <span className="inline-flex items-center gap-1"><Percent className="size-3.5 text-slate-500" />{coupon.discountValue}%{coupon.maxDiscount > 0 ? ` (max ₹${coupon.maxDiscount})` : ''}</span>
                       ) : (
                         `₹${coupon.discountValue} off`
                       )}
                     </td>
-                    <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{coupon.minOrderAmount ? `₹${coupon.minOrderAmount}` : 'None'}</td>
-                    <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{coupon.usedCount} / {coupon.usageLimit}</td>
+                    <td className="hidden px-5 py-3 text-slate-500 md:table-cell">{coupon.minOrderAmount ? `₹${coupon.minOrderAmount}` : 'None'}</td>
+                    <td className="hidden px-5 py-3 text-slate-500 md:table-cell">{coupon.usedCount} / {coupon.usageLimit}</td>
                     <td className="px-5 py-3">
-                      <span className={cn('text-muted-foreground', isExpired && 'font-medium text-destructive')}>
+                      <span className={cn('text-slate-500', isExpired && 'font-medium text-red-600')}>
                         {new Date(coupon.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
                     </td>
@@ -184,7 +184,7 @@ export default function AdminCoupons() {
                           {coupon.isActive ? 'Deactivate' : 'Activate'}
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => openEdit(coupon)}><Pencil /> Edit</Button>
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(coupon)} aria-label={`Delete ${coupon.code}`}>
+                        <Button variant="ghost" size="sm" className="text-slate-500 hover:text-red-600" onClick={() => setDeleteTarget(coupon)} aria-label={`Delete ${coupon.code}`}>
                           <Trash2 />
                         </Button>
                       </div>
@@ -196,10 +196,10 @@ export default function AdminCoupons() {
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Tag className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Tag className="size-6" /></span>
           <h2 className="text-base font-semibold">No coupons yet</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Create promo codes like SAVE10 or FLAT50 to drive sales.</p>
+          <p className="max-w-sm text-sm text-slate-500">Create promo codes like SAVE10 or FLAT50 to drive sales.</p>
           <Button className="mt-2" onClick={openCreate}><Plus /> New coupon</Button>
         </div>
       )}
@@ -222,7 +222,7 @@ export default function AdminCoupons() {
           <div>
             <label className="mb-1.5 block text-sm font-medium">Code *</label>
             <Input value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value.toUpperCase() }))} placeholder="SAVE10" aria-invalid={!!errors.code} className="font-mono" />
-            {errors.code && <p role="alert" className="mt-1 text-xs text-destructive">{errors.code}</p>}
+            {errors.code && <p role="alert" className="mt-1 text-xs text-red-600">{errors.code}</p>}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Discount type</label>
@@ -234,7 +234,7 @@ export default function AdminCoupons() {
           <div>
             <label className="mb-1.5 block text-sm font-medium">Discount value *</label>
             <Input type="number" min="1" value={form.discountValue} onChange={(event) => setForm((current) => ({ ...current, discountValue: event.target.value }))} placeholder={form.discountType === 'percentage' ? '10' : '50'} aria-invalid={!!errors.discountValue} />
-            {errors.discountValue && <p role="alert" className="mt-1 text-xs text-destructive">{errors.discountValue}</p>}
+            {errors.discountValue && <p role="alert" className="mt-1 text-xs text-red-600">{errors.discountValue}</p>}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Max discount (₹, optional)</label>
@@ -251,7 +251,7 @@ export default function AdminCoupons() {
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-sm font-medium">Expiry date *</label>
             <Input type="date" value={form.expiryDate} onChange={(event) => setForm((current) => ({ ...current, expiryDate: event.target.value }))} aria-invalid={!!errors.expiryDate} />
-            {errors.expiryDate && <p role="alert" className="mt-1 text-xs text-destructive">{errors.expiryDate}</p>}
+            {errors.expiryDate && <p role="alert" className="mt-1 text-xs text-red-600">{errors.expiryDate}</p>}
           </div>
           <label className="flex cursor-pointer items-center gap-2.5 text-sm sm:col-span-2">
             <input

@@ -155,17 +155,17 @@ function SellerRegistration() {
     return (
       <AuthLayout eyebrow="Application received" title="You're almost a seller">
         <div className="flex flex-col items-center gap-4 py-6 text-center">
-          <span className="flex size-14 items-center justify-center rounded-full bg-success/10">
-            <CheckCircle2 className="size-7 text-success" />
+          <span className="flex size-14 items-center justify-center rounded-full bg-emerald-100">
+            <CheckCircle2 className="size-7 text-emerald-600" />
           </span>
           <h2 className="text-xl font-bold">Store under review</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            <span className="font-semibold text-foreground">{store.storeName}</span> has been
+          <p className="text-sm leading-relaxed text-slate-500">
+            <span className="font-semibold text-slate-900">{store.storeName}</span> has been
             submitted. Once an admin approves it, your account becomes a seller and you can list
             products.
           </p>
           <Badge variant="warning">Status: pending</Badge>
-          <Link to="/" className="font-medium text-primary hover:underline">
+          <Link to="/" className="font-medium text-indigo-600 hover:underline">
             Back to home
           </Link>
         </div>
@@ -190,17 +190,17 @@ function SellerRegistration() {
               <span
                 className={`flex size-8 items-center justify-center rounded-full border text-xs font-semibold transition-colors ${
                   state === 'done'
-                    ? 'border-success/40 bg-success/10 text-success'
+                    ? 'border-emerald-200 bg-emerald-100 text-emerald-600'
                     : state === 'current'
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border text-muted-foreground'
+                      ? 'border-indigo-500 bg-indigo-600 text-white'
+                      : 'border-slate-200 text-slate-500'
                 }`}
               >
                 {state === 'done' ? <CheckCircle2 className="size-4" /> : <Icon className="size-4" />}
               </span>
               <span
                 className={`text-xs font-medium ${
-                  state === 'todo' ? 'text-muted-foreground' : 'text-foreground'
+                  state === 'todo' ? 'text-slate-500' : 'text-slate-900'
                 }`}
               >
                 {label}
@@ -213,7 +213,7 @@ function SellerRegistration() {
       {serverError && (
         <div
           role="alert"
-          className="mb-5 flex items-start gap-2 rounded-lg border border-danger-500/30 bg-danger-50 px-3.5 py-3 text-sm text-danger-700"
+          className="mb-5 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-50 px-3.5 py-3 text-sm text-red-700"
         >
           <CircleAlert className="mt-0.5 size-4 shrink-0" />
           {serverError}
@@ -284,9 +284,9 @@ function SellerRegistration() {
                   required
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-500">
                 Already selling here?{' '}
-                <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link> and apply from your dashboard instead.
+                <Link to="/login" className="font-medium text-indigo-600 hover:underline">Sign in</Link> and apply from your dashboard instead.
               </p>
               <Button
                 className="w-full"
@@ -371,8 +371,8 @@ function SellerRegistration() {
           {/* STEP 2 — business + payout */}
           {step === 2 && (
             <>
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3.5 py-2.5 text-sm text-muted-foreground">
-                <Building2 className="size-4 shrink-0 text-primary" />
+              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-500">
+                <Building2 className="size-4 shrink-0 text-indigo-600" />
                 Business registration (optional for hobby sellers)
               </div>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -394,8 +394,8 @@ function SellerRegistration() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3.5 py-2.5 text-sm text-muted-foreground">
-                <Banknote className="size-4 shrink-0 text-primary" />
+              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-500">
+                <Banknote className="size-4 shrink-0 text-indigo-600" />
                 Payout details — earnings land here after sales
               </div>
               <div className="grid gap-5 sm:grid-cols-2">

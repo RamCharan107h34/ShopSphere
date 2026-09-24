@@ -44,13 +44,13 @@ export default function SellerReturns() {
       <PageIntro title="Returns" subtitle="Review customer return requests. Completing a return restocks the item and records the refund." />
 
       {loading ? (
-        <div className="space-y-4">{[...Array(3)].map((_, i) => <div key={i} className="h-36 animate-pulse rounded-2xl bg-muted" />)}</div>
+        <div className="space-y-4">{[...Array(3)].map((_, i) => <div key={i} className="h-36 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : returns?.length ? (
         <div className="space-y-4">
           {returns.map((returnItem) => {
             const product = returnItem.productId
             return (
-              <article key={returnItem._id} className="rounded-2xl border border-border bg-card shadow-card">
+              <article key={returnItem._id} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div className="flex flex-wrap items-center gap-4 px-5 py-4">
                   <Thumb src={product?.images?.[0]} alt={product?.title} />
                   <div className="min-w-0 flex-1">
@@ -58,16 +58,16 @@ export default function SellerReturns() {
                       <p className="truncate text-sm font-semibold">{product?.title || 'Product'}</p>
                       <StatusBadge status={returnItem.status} meta={RETURN_META} />
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-slate-500">
                       {returnItem.customerId?.name} · {returnItem.customerId?.phone || returnItem.customerId?.email} · Qty {returnItem.quantity} ·{' '}
                       {new Date(returnItem.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                     </p>
                     <p className="mt-1.5 text-xs">
-                      <span className="font-medium text-foreground">Reason:</span> <span className="text-muted-foreground">{returnItem.reason}</span>
+                      <span className="font-medium text-slate-900">Reason:</span> <span className="text-slate-500">{returnItem.reason}</span>
                     </p>
-                    {returnItem.description && <p className="mt-0.5 text-xs text-muted-foreground">“{returnItem.description}”</p>}
+                    {returnItem.description && <p className="mt-0.5 text-xs text-slate-500">“{returnItem.description}”</p>}
                     {returnItem.adminNote && (
-                      <p className="mt-0.5 text-xs"><span className="font-medium text-foreground">Your note:</span> <span className="text-muted-foreground">{returnItem.adminNote}</span></p>
+                      <p className="mt-0.5 text-xs"><span className="font-medium text-slate-900">Your note:</span> <span className="text-slate-500">{returnItem.adminNote}</span></p>
                     )}
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-2">
@@ -78,7 +78,7 @@ export default function SellerReturns() {
                           <Button size="sm" variant="success" disabled={busy} onClick={() => update(returnItem, 'approved')}>
                             <CheckCircle2 /> Approve
                           </Button>
-                          <Button size="sm" variant="outline" className="text-destructive hover:bg-danger-50" disabled={busy} onClick={() => { setNote(''); setRejectTarget(returnItem) }}>
+                          <Button size="sm" variant="outline" className="text-red-600 hover:bg-red-50" disabled={busy} onClick={() => { setNote(''); setRejectTarget(returnItem) }}>
                             <XCircle /> Reject
                           </Button>
                         </>
@@ -96,10 +96,10 @@ export default function SellerReturns() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><RotateCcw className="size-6" /></span>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600"><RotateCcw className="size-6" /></span>
           <h2 className="text-base font-semibold">No return requests</h2>
-          <p className="max-w-sm text-sm text-muted-foreground">Customer return requests for delivered orders will appear here.</p>
+          <p className="max-w-sm text-sm text-slate-500">Customer return requests for delivered orders will appear here.</p>
         </div>
       )}
 

@@ -2,10 +2,17 @@ import exp from "express";
 
 import { ProductModel } from "../models/ProductModel.js";
 import { StoreModel } from "../models/StoreModel.js";
+import { OrderModel } from "../models/OrderModel.js";
+import { UserModel } from "../models/UserModel.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { verifyRole } from "../middlewares/verifyRole.js";
+import { optionalAuth } from "../middlewares/optionalAuth.js";
 import { upload } from "../config/upload.js";
 import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
+import { validate } from "../middlewares/validate.js";
+import { productCreateSchema } from "../validators/schemas.js";
+import { recordAudit } from "../utils/audit.js";
+import { notify } from "../utils/notify.js";
 import {
     MaxHeap,
     mergeSort,
@@ -15,6 +22,10 @@ import {
 } from "../utils/dsa.js";
 
 export const productApp = exp.Router();
+
+// How many products a customer's "recently viewed" list keeps. Long enough to
+// learn their interests, short enough that taste drift is picked up quickly.
+const MAX_RECENT_VIEWS = 20;
 
 // 1. Get All Products with Search, Filter, Sort & Pagination (Public)
 productApp.get("/products", async (req, res) => {
@@ -127,7 +138,7 @@ productApp.get("/products/:id", async (req, res) => {
 });
 
 // 5. Create Product (Seller only)
-productApp.post("/products", verifyToken, verifyRole("seller"), async (req, res) => {
+productApp.post("/products", verifyToken, verifyRole("seller"), validate({ body: productCreateSchema }), async (req, res) => {
     const store = await StoreModel.findOne({ sellerId: req.user.id });
 
     if (!store) {
@@ -158,12 +169,6 @@ productApp.post("/products", verifyToken, verifyRole("seller"), async (req, res)
         aiGeneratedFeatures
     } = req.body;
 
-    if (!title || !description || price === undefined || !category) {
-        return res.status(400).json({
-            message: "Title, description, price, and category are required"
-        });
-    }
-
     const productDoc = new ProductModel({
         title: title.trim(),
         sku: sku ? sku.trim() : "",
@@ -184,6 +189,15 @@ productApp.post("/products", verifyToken, verifyRole("seller"), async (req, res)
     });
 
     const savedProduct = await productDoc.save();
+
+    await recordAudit({
+        req,
+        action: "product.create",
+        targetType: "Product",
+        targetId: savedProduct._id,
+        description: `Listed "${savedProduct.title}" at ${savedProduct.price}`,
+        metadata: { title: savedProduct.title, price: savedProduct.price }
+    });
 
     res.status(201).json({
         message: "Product created successfully",
@@ -293,6 +307,15 @@ productApp.delete("/products/:id", verifyToken, verifyRole("seller", "admin"), a
 
     const deletedProduct = await ProductModel.findByIdAndDelete(req.params.id);
 
+    await recordAudit({
+        req,
+        action: "product.delete",
+        targetType: "Product",
+        targetId: deletedProduct._id,
+        description: `Deleted "${deletedProduct.title}"`,
+        metadata: { title: deletedProduct.title, sellerId: String(deletedProduct.sellerId) }
+    });
+
     res.status(200).json({
         message: "Product deleted successfully",
         payload: deletedProduct
@@ -353,6 +376,177 @@ productApp.get("/top-picks", async (req, res) => {
     res.status(200).json({
         message: "Top picks by popularity",
         payload: { topPicks }
+    });
+});
+
+// 11b. Record a Product View (Signed-in) - Fire-and-forget from the product
+// page. Moves the product to the front of the customer's history instead of
+// duplicating it, and trims the tail, so the list is always the last 20 views.
+productApp.put("/products/:id/view", verifyToken, async (req, res) => {
+    const product = await ProductModel.findById(req.params.id).select("category");
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found"
+        });
+    }
+
+    const user = await UserModel.findById(req.user.id).select("recentlyViewed");
+    if (!user) {
+        return res.status(404).json({
+            message: "User not found"
+        });
+    }
+
+    // Accounts that predate the field hydrate as an empty array, but the guard
+    // keeps this honest if a future read ever goes .lean().
+    const earlierViews = (user.recentlyViewed || []).filter(
+        (entry) => entry.productId.toString() !== product._id.toString()
+    );
+
+    user.recentlyViewed = [
+        { productId: product._id, category: product.category, viewedAt: new Date() },
+        ...earlierViews
+    ].slice(0, MAX_RECENT_VIEWS);
+
+    await user.save();
+
+    res.status(200).json({
+        message: "View recorded",
+        payload: { productId: product._id }
+    });
+});
+
+// 11c. Personalized Recommendations (Public - optional auth)
+// Guests (and signed-in customers with no history yet) get the top-rated rail,
+// which is exactly the popularity score /top-picks uses. A signed-in customer's
+// recently viewed and purchased categories are turned into a weighted affinity
+// profile that reranks that same quality score, so the best products from the
+// categories they actually shop rise to the front. Affinity only reranks —
+// unrelated products still qualify on quality, so the rail never runs dry.
+productApp.get("/recommendations", optionalAuth, async (req, res) => {
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 8, 1), 20);
+    const now = Date.now();
+
+    // --- Category affinity -------------------------------------------------
+    // categoryId -> weight. A purchase is a stronger signal than a view (3 per
+    // unit, capped so one bulk order can't take over) and older views fade.
+    const categoryWeights = new Map();
+    const purchasedProductIds = new Set();
+
+    const addWeight = (categoryId, weight) => {
+        if (!categoryId) return;
+        const key = categoryId.toString();
+        categoryWeights.set(key, (categoryWeights.get(key) || 0) + weight);
+    };
+
+    if (req.user) {
+        const [user, orders] = await Promise.all([
+            UserModel.findById(req.user.id).select("recentlyViewed"),
+            OrderModel.find({ customerId: req.user.id }).select("vendorOrders")
+        ]);
+
+        // 1. Recently viewed categories. The newest view is worth 1 and each
+        // step back decays by half, so this week's browsing outranks last month's.
+        (user?.recentlyViewed || []).forEach((entry, index) => {
+            addWeight(entry.category, 1 / (1 + index * 0.5));
+        });
+
+        // 2. Purchased categories. Order items store the product id only, so
+        // total the units per product first, then map to categories in one query.
+        const unitsByProduct = new Map();
+        for (const order of orders) {
+            for (const vendorOrder of order.vendorOrders) {
+                if (vendorOrder.status === "cancelled") continue;
+                for (const item of vendorOrder.items) {
+                    const key = item.productId.toString();
+                    unitsByProduct.set(key, (unitsByProduct.get(key) || 0) + item.quantity);
+                }
+            }
+        }
+
+        for (const productId of unitsByProduct.keys()) {
+            purchasedProductIds.add(productId);
+        }
+
+        if (unitsByProduct.size > 0) {
+            const purchased = await ProductModel.find({
+                _id: { $in: [...unitsByProduct.keys()] }
+            }).select("category");
+
+            for (const product of purchased) {
+                const units = Math.min(unitsByProduct.get(product._id.toString()) || 1, 3);
+                addWeight(product.category, 3 * units);
+            }
+        }
+    }
+
+    // Normalize so the strongest category is worth a flat +150. That is enough to
+    // lift an average product over a top-rated one from an unrelated category,
+    // without erasing quality — the tie-breaker within a category.
+    const maxWeight = Math.max(0, ...categoryWeights.values());
+    const personalized = maxWeight > 0;
+
+    const candidates = await ProductModel.find({
+        status: "active",
+        stock: { $gt: 0 }
+    })
+        .populate("category", "name slug")
+        .populate("storeId", "storeName logo");
+
+    const heap = new MaxHeap();
+
+    for (const product of candidates) {
+        // Same rating-first popularity score as /top-picks
+        const ageInDays = (now - new Date(product.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+        const qualityScore = Math.round(
+            (product.rating / 5) * 50 +
+                Math.min(product.reviewsCount, 100) * 0.3 +
+                Math.max(0, 1 - ageInDays / 30) * 20
+        );
+
+        const categoryId = (product.category?._id || product.category)?.toString();
+        const affinity = maxWeight > 0 ? (categoryWeights.get(categoryId) || 0) / maxWeight : 0;
+
+        heap.push({ score: qualityScore + Math.round(affinity * 150), product });
+    }
+
+    const products = [];
+    while (products.length < limit && heap.size() > 0) {
+        const { product } = heap.pop();
+
+        // The purchase already shaped the ranking through its category — no need
+        // to recommend the customer something they just bought.
+        if (purchasedProductIds.has(product._id.toString())) continue;
+
+        products.push(product);
+    }
+
+    // Category names behind the ranking, strongest first, for the storefront's
+    // "because you browsed X" copy. Taken from the populated candidates so this
+    // costs no extra query.
+    const nameByCategoryId = new Map();
+    for (const product of candidates) {
+        if (product.category?._id) {
+            nameByCategoryId.set(product.category._id.toString(), product.category.name);
+        }
+    }
+
+    const basedOn = [...categoryWeights.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([categoryId]) => nameByCategoryId.get(categoryId))
+        .filter(Boolean);
+
+    res.status(200).json({
+        message: personalized
+            ? "Recommendations personalized from this customer's activity"
+            : "Top-rated products",
+        payload: {
+            products,
+            personalized,
+            basedOn
+        }
     });
 });
 
@@ -518,6 +712,24 @@ productApp.put("/admin/moderate/:id", verifyToken, verifyRole("admin"), async (r
             message: "Product not found"
         });
     }
+
+    await recordAudit({
+        req,
+        action: "product.moderate",
+        targetType: "Product",
+        targetId: updatedProduct._id,
+        description: `Set "${updatedProduct.title}" to '${status}'`,
+        metadata: { status, sellerId: String(updatedProduct.sellerId) }
+    });
+
+    await notify({
+        recipientId: updatedProduct.sellerId,
+        type: "product",
+        title: status === "active" ? "Product approved" : `Product set to ${status}`,
+        message: `"${updatedProduct.title}" is now ${status}.`,
+        link: "/seller/products",
+        entityId: updatedProduct._id
+    });
 
     res.status(200).json({
         message: `Product status updated to ${status}`,
