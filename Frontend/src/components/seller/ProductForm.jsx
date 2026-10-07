@@ -90,6 +90,7 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   // ---- AI copy assistant state ----
   const [aiInputs, setAiInputs] = useState({ targetAudience: '', material: '', keywords: '' })
@@ -100,7 +101,11 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
   const [acceptedFeatures, setAcceptedFeatures] = useState(false)
 
   useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => setCategories([]))
+    setCategoriesLoading(true)
+    fetchCategories()
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]))
+      .finally(() => setCategoriesLoading(false))
   }, [])
 
   const categoryName = categories.find((category) => category._id === form.category)?.name || ''
@@ -283,10 +288,23 @@ export function ProductForm({ product, onSubmit, submitLabel = 'Save product' })
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Category *</label>
-            <Select value={form.category} onChange={set('category')} aria-invalid={!!errors.category}>
-              <option value="">Select a category…</option>
+            <Select
+              value={form.category}
+              onChange={set('category')}
+              aria-invalid={!!errors.category}
+              disabled={categoriesLoading && categories.length === 0}
+            >
+              <option value="" disabled={categories.length > 0}>
+                {categoriesLoading
+                  ? 'Loading categories…'
+                  : categories.length === 0
+                  ? 'No categories available'
+                  : 'Select a category…'}
+              </option>
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>{category.name}</option>
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
               ))}
             </Select>
             {fieldError('category')}

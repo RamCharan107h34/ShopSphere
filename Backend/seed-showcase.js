@@ -1,8 +1,15 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
+import dns from "node:dns";
 import dotenv from "dotenv";
 dotenv.config();
 
-const DB_URL = process.env.DB_URL || "mongodb://127.0.0.1:27017/shopsphere_db";
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch {
+  // Ignore
+}
+
+const DB_URL = process.env.DB_URL?.trim() || "mongodb://127.0.0.1:27017/shopsphere_db";
 
 async function seed() {
   await mongoose.connect(DB_URL);
