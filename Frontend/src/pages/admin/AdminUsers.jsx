@@ -59,6 +59,24 @@ export default function AdminUsers() {
     }
   }
 
+  const handleRoleChange = async (user, newRole) => {
+    if (user.role === newRole) return
+    setBusyId(user._id)
+    try {
+      await updateUser(user._id, { role: newRole })
+      toast({
+        title: 'Role updated',
+        description: `${user.name}'s role has been updated to ${ROLE_META[newRole]?.label || newRole}.`,
+        variant: 'success',
+      })
+      refetch()
+    } catch (error) {
+      toast({ title: 'Could not update role', description: getErrorMessage(error), variant: 'error' })
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const handleDelete = async () => {
     setDeleting(true)
     try {
@@ -115,7 +133,24 @@ export default function AdminUsers() {
                       <p className="font-semibold">{user.name}</p>
                       <p className="text-xs text-slate-500">{user.email}</p>
                     </td>
-                    <td className="px-5 py-3"><Badge variant={role.variant}>{role.label}</Badge></td>
+                    <td className="px-5 py-3">
+                      {user.role === 'admin' ? (
+                        <Badge variant={role.variant}>{role.label}</Badge>
+                      ) : (
+                        <select
+                          value={user.role}
+                          disabled={busyId === user._id}
+                          onChange={(e) => handleRoleChange(user, e.target.value)}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 focus:border-[#0F766E] focus:outline-none focus:ring-1 focus:ring-[#0F766E] cursor-pointer"
+                        >
+                          {Object.entries(ROLE_META).map(([key, meta]) => (
+                            <option key={key} value={key}>
+                              {meta.label}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </td>
                     <td className="hidden px-5 py-3 text-slate-500 md:table-cell">{user.phone || '—'}</td>
                     <td className="hidden px-5 py-3 text-slate-500 lg:table-cell">
                       {new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
