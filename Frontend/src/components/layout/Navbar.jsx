@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -32,10 +32,10 @@ import { formatPrice } from '../../lib/format.js'
 import api from '../../services/api.js'
 
 const ROLE_HOME = {
-  seller: { to: '/seller', label: 'Seller Dashboard', icon: Store },
-  admin: { to: '/admin', label: 'Admin Console', icon: ShieldCheck },
-  support: { to: '/support', label: 'Support Desk', icon: Headset },
-  delivery: { to: '/delivery', label: 'Delivery Run', icon: Truck },
+  seller: { to: '/seller', label: 'Seller Dashboard', icon: Store, color: 'text-indigo-400' },
+  admin: { to: '/admin', label: 'Admin Console', icon: ShieldCheck, color: 'text-amber-400' },
+  support: { to: '/support', label: 'Support Desk', icon: Headset, color: 'text-cyan-400' },
+  delivery: { to: '/delivery', label: 'Delivery Run', icon: Truck, color: 'text-emerald-400' },
 }
 
 const CATEGORY_NAV = [
@@ -319,13 +319,15 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-2 md:gap-3">
           {user && user.role !== 'customer' && <RoleShortcut role={user.role} />}
 
-          {/* Sell CTA button */}
-          <Link
-            to="/register/seller"
-            className="hidden items-center gap-1.5 rounded-xl border border-[#0F766E] px-3 py-1.5 text-xs font-semibold text-[#FFE3D8] transition hover:bg-[#0F766E] hover:text-white sm:flex"
-          >
-            <Store className="size-3.5" /> Sell on ShopSphear
-          </Link>
+          {/* Sell CTA button - only for customers or visitors */}
+          {(!user || user.role === 'customer') && (
+            <Link
+              to="/register/seller"
+              className="hidden items-center gap-1.5 rounded-xl border border-[#0F766E] px-3 py-1.5 text-xs font-semibold text-[#FFE3D8] transition hover:bg-[#0F766E] hover:text-white sm:flex"
+            >
+              <Store className="size-3.5" /> Sell on ShopSphear
+            </Link>
+          )}
 
           {/* Notifications */}
           <NotificationBell />
@@ -419,40 +421,27 @@ export function Navbar() {
                         )
                       })}
 
-                      {/* Workspaces quick switcher */}
-                      <div className="border-t border-[#174747] pt-1">
-                        <p className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                          Platform Dashboards
-                        </p>
-                        <Link
-                          to="/seller"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-slate-300 hover:bg-[#174747] hover:text-white"
-                        >
-                          <Store className="size-3.5 text-indigo-400" /> Seller Dashboard
-                        </Link>
-                        <Link
-                          to="/admin"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-slate-300 hover:bg-[#174747] hover:text-white"
-                        >
-                          <ShieldCheck className="size-3.5 text-amber-400" /> Admin Console
-                        </Link>
-                        <Link
-                          to="/support"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-slate-300 hover:bg-[#174747] hover:text-white"
-                        >
-                          <Headset className="size-3.5 text-cyan-400" /> Support Desk
-                        </Link>
-                        <Link
-                          to="/delivery"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-slate-300 hover:bg-[#174747] hover:text-white"
-                        >
-                          <Truck className="size-3.5 text-emerald-400" /> Delivery Run
-                        </Link>
-                      </div>
+                      {/* Role Workspace quick switcher (only shows the user's active role dashboard) */}
+                      {user.role && user.role !== 'customer' && ROLE_HOME[user.role] && (
+                        <div className="border-t border-[#174747] pt-1">
+                          <p className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                            Platform Dashboard
+                          </p>
+                          {(() => {
+                            const dashboard = ROLE_HOME[user.role]
+                            const Icon = dashboard.icon
+                            return (
+                              <Link
+                                to={dashboard.to}
+                                onClick={() => setUserMenuOpen(false)}
+                                className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-slate-300 hover:bg-[#174747] hover:text-white"
+                              >
+                                <Icon className={cn('size-3.5', dashboard.color || 'text-indigo-400')} /> {dashboard.label}
+                              </Link>
+                            )
+                          })()}
+                        </div>
+                      )}
                     </div>
 
                     <div className="my-1 h-px bg-[#174747]" />
@@ -522,15 +511,34 @@ export function Navbar() {
               ))}
             </div>
 
-            <div className="mt-4 border-t border-[#174747] pt-3">
-              <Link
-                to="/register/seller"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-2 rounded-xl bg-[#0F766E] px-3 py-2.5 text-xs font-bold text-white"
-              >
-                <Store className="size-4" /> Open a Store on ShopSphear
-              </Link>
-            </div>
+            {(!user || user.role === 'customer') && (
+              <div className="mt-4 border-t border-[#174747] pt-3">
+                <Link
+                  to="/register/seller"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 rounded-xl bg-[#0F766E] px-3 py-2.5 text-xs font-bold text-white"
+                >
+                  <Store className="size-4" /> Open a Store on ShopSphear
+                </Link>
+              </div>
+            )}
+            {user && user.role !== 'customer' && ROLE_HOME[user.role] && (
+              <div className="mt-4 border-t border-[#174747] pt-3">
+                {(() => {
+                  const dashboard = ROLE_HOME[user.role]
+                  const Icon = dashboard.icon
+                  return (
+                    <Link
+                      to={dashboard.to}
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-xl bg-[#0F766E] px-3 py-2.5 text-xs font-bold text-white"
+                    >
+                      <Icon className="size-4" /> {dashboard.label}
+                    </Link>
+                  )
+                })()}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
