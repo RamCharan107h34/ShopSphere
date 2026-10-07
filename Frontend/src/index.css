@@ -4,3 +4,24 @@
    of the design system in src/design/theme.css. Everything else — layouts,
    colours, role accents, component classes — is in src/design/context.js. */
 @import "./design/theme.css";
+
+@layer base {
+  /* Tailwind v4 dropped `cursor: pointer` from preflight for buttons
+     ("Buttons now use cursor: default instead of cursor: pointer to match the
+     default browser behavior"). The rest of this UI still assumes the pointer
+     hand — selects and checkbox labels add `cursor-pointer` by hand — so
+     without this every button reads as inert text. Disabled controls keep
+     their own cursor via the `disabled:cursor-*` utilities, which win over
+     this base rule. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  /* A <label> that wraps a checkbox or radio is pressable text too, but
+     browsers give it the arrow cursor. Field labels for text inputs are left
+     alone — pressing those just focuses the field, so the caret cursor fits. */
+  label:has(> input:is([type="checkbox"], [type="radio"]):not(:disabled)) {
+    cursor: pointer;
+  }
+}
