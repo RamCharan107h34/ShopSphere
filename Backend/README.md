@@ -28,6 +28,7 @@ Requires a running MongoDB at `DB_URL` (default `mongodb://127.0.0.1:27017/shops
 |---|---|---|
 | `PORT` | no | Default 3000 |
 | `DB_URL` | yes | MongoDB connection string |
+| `FRONTEND_URL` | in production | Origins allowed to call this API from a browser, comma-separated (`*` allowed inside an entry for preview deploys). Localhost dev origins are always allowed. An empty/incorrect value is the usual cause of "No 'Access-Control-Allow-Origin' header is present" — see `../DEPLOYMENT.md` |
 | `JWT_SECRET` | yes | Token signing |
 | `CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET` | for uploads | Product/store images |
 | `COHERE_API_KEY` | for AI | Description generation + semantic search |

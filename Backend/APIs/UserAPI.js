@@ -13,18 +13,12 @@ import {
     generateRefreshToken,
     hashToken,
     refreshTokenExpiry,
+    accessCookieOptions,
     refreshCookieOptions,
     ACCESS_TOKEN_TTL
 } from "../utils/tokens.js";
 
 export const userApp = exp.Router();
-
-const accessCookieOptions = () => ({
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 30 * 60 * 1000
-});
 
 // Start a new refresh session for an account and return the raw token.
 // Expired entries are pruned here so the array cannot grow without bound.

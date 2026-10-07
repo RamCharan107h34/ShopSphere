@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 
+import { isDeployed } from "./isDeployed.js";
+
 // Access tokens are short-lived and stateless — a leaked one is useless within
 // minutes. Long-lived sessions come from the refresh token, which is stored
 // server-side (hashed) and can be revoked.
@@ -25,10 +27,23 @@ export const hashToken = (token) =>
 
 export const refreshTokenExpiry = () => new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
-export const refreshCookieOptions = () => ({
+// Both session cookies are written from one place so they can never drift apart.
+//
+// In a deployment the frontend and this API are different sites (a Vercel origin
+// calling a Render service). A browser discards a `SameSite=Lax` cookie that
+// arrives in a cross-site response, so the session cookies only take effect with
+// `SameSite=None` — which browsers accept solely alongside `Secure`. Local dev
+// keeps Lax so the cookie still works over plain http://localhost.
+const sessionCookieOptions = ({ maxAge }) => ({
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: REFRESH_TOKEN_TTL_MS,
+    secure: isDeployed(),
+    sameSite: isDeployed() ? "none" : "lax",
+    maxAge,
     path: "/"
 });
+
+export const accessCookieOptions = () =>
+    sessionCookieOptions({ maxAge: 30 * 60 * 1000 });
+
+export const refreshCookieOptions = () =>
+    sessionCookieOptions({ maxAge: REFRESH_TOKEN_TTL_MS });

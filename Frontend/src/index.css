@@ -24,4 +24,42 @@
   label:has(> input:is([type="checkbox"], [type="radio"]):not(:disabled)) {
     cursor: pointer;
   }
+
+  /* The storefront is an app, not a document. Left at the default
+     `user-select: auto`, the browser treats every heading, label and paragraph
+     as selectable document text: hovering a word swaps the pointer for the
+     text I-beam, and clicking one can drop a blinking caret into it (caret
+     browsing). Both are the browser's `cursor: auto` resolution, so the shell
+     pins the pointer explicitly and makes non-editable text unselectable.
+     Fields keep the real text cursor below; anything that should stay
+     copyable opts back in with `data-selectable="true"` (or the `select-text`
+     utility, which sits in the utilities layer and so outranks this rule). */
+  body,
+  [data-selectable='false'] {
+    cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Real fields stay fully editable: text cursor, selection, caret, clipboard.
+     Only the text-like input types — a checkbox, file or range input has no
+     caret to place, so it keeps the shell's arrow. */
+  input:not(
+      [type='checkbox'],
+      [type='radio'],
+      [type='button'],
+      [type='submit'],
+      [type='reset'],
+      [type='file'],
+      [type='range'],
+      [type='color'],
+      [type='image']
+    ),
+  textarea,
+  [contenteditable]:not([contenteditable='false']),
+  [data-selectable='true'] {
+    cursor: text;
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }

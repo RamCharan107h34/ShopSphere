@@ -25,6 +25,7 @@ import { notificationApp } from "./APIs/NotificationAPI.js";
 import { settlementApp } from "./APIs/SettlementAPI.js";
 import { auditApp } from "./APIs/AuditAPI.js";
 import { writeLimiter } from "./middlewares/rateLimit.js";
+import { buildCorsOptions } from "./config/cors.js";
 
 config();
 
@@ -33,10 +34,16 @@ const app = exp();
 const server = createServer(app);
 
 // Middleware
-app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true
-}));
+//
+// Deployed behind a proxy (Render, Heroku, Fly...), so req.ip is the proxy's
+// address until Express is told to trust the hop in front of it. Without this
+// every visitor shares one rate-limit bucket — authLimiter would lock out the
+// whole site after 10 failed sign-ins — and express-rate-limit logs a
+// validation error for the X-Forwarded-For header it cannot attribute.
+app.set("trust proxy", 1);
+
+// Allow-list comes from FRONTEND_URL (comma-separated); see config/cors.js.
+app.use(cors(buildCorsOptions()));
 
 app.use(exp.json());
 app.use(cookieParser());

@@ -15,6 +15,34 @@ if (!apiBaseUrl) {
   // Without a proxy an empty base URL points at the Vite dev server itself and
   // every call 404s, so say it once rather than let it look like a backend bug.
   console.warn('[api] VITE_API_URL is not set — copy Frontend/.env.example to Frontend/.env')
+
+  if (import.meta.env.PROD) {
+    // In a deployed build "not set" is a broken deploy, not a dev convenience.
+    // The requests land on the static host serving this app, which answers them
+    // with index.html (the catch-all rewrite in vercel.json), so every screen
+    // shows an error state while the network tab looks healthy.
+    console.error(
+      '[api] This build was made without VITE_API_URL, so every request is going to the static host serving this app. Set it to the backend origin and redeploy — see DEPLOYMENT.md.',
+    )
+  }
+}
+
+// Vite inlines VITE_API_URL at build time, so in a deployed build the value is
+// frozen from the host's env vars and only a redeploy can change it. Catching a
+// wrong one here saves debugging a "backend" that is really a static host:
+// pointing the API at this app's own origin produces the browser message for a
+// missing CORS header, but no change to the backend can ever fix it.
+if (import.meta.env.PROD && apiBaseUrl) {
+  try {
+    const apiHost = new URL(apiBaseUrl, window.location.origin).host
+    if (apiHost === window.location.host) {
+      console.error(
+        `[api] VITE_API_URL (${apiBaseUrl}) is this app's own origin, not the API. Unless the API is proxied through this host by a rewrite, set VITE_API_URL to the backend origin and redeploy — see DEPLOYMENT.md.`,
+      )
+    }
+  } catch {
+    console.error(`[api] VITE_API_URL (${apiBaseUrl}) is not a valid URL.`)
+  }
 }
 
 export const api = axios.create({
