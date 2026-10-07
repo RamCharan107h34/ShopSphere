@@ -68,4 +68,3 @@ Sellers own fulfilment up to packing: `placed → confirmed → packed`, then ha
 | Admin | admin@test.com | Test@1234 | /admin dashboard |
 | Support agent | agent_1788582441711@test.com | Test@1234 | /support desk |
 | Delivery partner | delivery@test.com | Test@1234 | /delivery dashboard |
-mongodb+srv://<db_username>:jy64y61cRAkPFsH6@shopsphere-01.elwg8sc.mongodb.net/?appName=ShopSphere-01

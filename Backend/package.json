@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "shopsphere-backend",
   "version": "1.0.0",
   "description": "ShopSphere - Multi-Vendor E-Commerce Marketplace Backend",
